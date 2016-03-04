@@ -15,6 +15,6 @@ public class NoobleApplication {
 		configuration.setClassForTemplateLoading(NoobleApplication.class, "templates");
 		configuration.setDefaultEncoding("UTF-8");
 		configuration.setTemplateExceptionHandler(TemplateExceptionHandler.HTML_DEBUG_HANDLER);
-
 	}
+
 }

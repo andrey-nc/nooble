@@ -1,12 +1,12 @@
 <html>
 
 <head>
-    <title>Login</title>
+    <title>Nooble - Login</title>
 </head>
 
 <body>
-    <div class="message">
-        <p>Imaginary</p>
+    <div class="nooble">
+        <p>Nooble</p>
     </div>
     Please, login:
     <div class="menu">

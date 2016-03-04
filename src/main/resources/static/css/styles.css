@@ -1,8 +1,20 @@
-.index {
-    background-color: lightgoldenrodyellow;
-    color: green;
+.nooble {
+    font: bold normal 300% "Book Antiqua";
+    color: #39a0ff;
     text-align: center;
     padding: 2px 5px;
+    /*
     border: solid 1px green;
     margin: 0 auto;
+    */
 }
+
+.index {
+    text-align: center;
+}
+
+input.uri {
+    width: 500px;
+}
+
+

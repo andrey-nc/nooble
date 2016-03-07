@@ -1,26 +1,24 @@
 package com.ghost;
 
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-
-import java.util.Map;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @Controller
-@RequestMapping("/")
+@RequestMapping("/index")
 public class IndexController {
 
-    @RequestMapping("/index")
-    //@ResponseBody
-    public String indexRequest(Map<String, Object> model) {
-        System.out.println("IndexController - index");
+    @RequestMapping(method = RequestMethod.GET)
+    public String indexForm() {
+        System.out.println("IndexController - indexRequest");
         return "index";
     }
 
-    @RequestMapping(path = "/index?q={URI}", method = RequestMethod.POST)
-    public String index(@PathVariable String URI) {
-        System.out.println("IndexController - index");
-        return "index";
+    @RequestMapping(method = RequestMethod.POST)
+    public String indexSubmit(@RequestParam("q") String uri) {
+        System.out.println("IndexController - index: " + uri);
+        // TODO: request URI indexing using Lucene API
+        return "redirect:/index?q=" + uri;
     }
 }

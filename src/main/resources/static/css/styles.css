@@ -1,12 +1,53 @@
 .nooble {
-    font: bold normal 300% "Book Antiqua";
+    font: bold normal 500% "Candara";
     color: #39a0ff;
     text-align: center;
     padding: 2px 5px;
-    /*
+    margin-top: 100px;
+    url("/");
+}
+
+.nooble-little {
+    font: bold normal 30px "Candara";
+    color: #39a0ff;
+    padding: 2px 5px;
+}
+
+a.nooble-littl {
+    text-decoration: none;
+}
+
+.message {
+    font: bold normal 100% "Arial";
+    background-color: #f4ffd7;
+    text-align: center;
+    padding: 2px 5px;
     border: solid 1px green;
     margin: 0 auto;
-    */
+}
+
+.search-bg {
+    background: #f1f1f1;
+    width: 100%;
+    left: 0;
+/*    position: absolute;*/
+    height: 59px;
+}
+
+div {
+    display: block;
+}
+
+/*
+#searchForm {
+    overflow: visible;
+    position: absolute;
+}
+*/
+
+.search-bg-border {
+    background-color: #f1f1f1;
+    border: 1px solid #e5e5e5;
 }
 
 .index {
@@ -17,4 +58,16 @@ input.uri {
     width: 500px;
 }
 
+input.search-depth {
+    width: 50px;
+}
 
+.result-text {
+    color: #808080;
+    font-family: arial,sans-serif;
+    font-size: small;
+}
+
+.search-result {
+    margin-left: 120px;
+}

@@ -15,10 +15,9 @@
 
     <div class="" id="searchForm">
         <div class="search-bg">
-            <div class="search-bg-border"></div>
-            <form method="GET" action="/search">
+            <form method="get" action="/search">
                 <label class="nooble-little" for="query">
-                    <a href="/">nooble:</a>
+                    <a href="/">${appName}:</a>
                 </label>
                 <input class="uri" type="text" name="q" id="query" required/>
                 <input type="submit" value="Search" />

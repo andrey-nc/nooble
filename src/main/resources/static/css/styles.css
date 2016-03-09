@@ -4,17 +4,14 @@
     text-align: center;
     padding: 2px 5px;
     margin-top: 100px;
-    url("/");
+url("/");
 }
 
 .nooble-little {
     font: bold normal 30px "Candara";
     color: #39a0ff;
     padding: 2px 5px;
-}
-
-a.nooble-littl {
-    text-decoration: none;
+    margin: 5px;
 }
 
 .message {
@@ -30,24 +27,12 @@ a.nooble-littl {
     background: #f1f1f1;
     width: 100%;
     left: 0;
-/*    position: absolute;*/
     height: 59px;
+    border: 1px solid #e5e5e5;
 }
 
 div {
     display: block;
-}
-
-/*
-#searchForm {
-    overflow: visible;
-    position: absolute;
-}
-*/
-
-.search-bg-border {
-    background-color: #f1f1f1;
-    border: 1px solid #e5e5e5;
 }
 
 .index {
@@ -70,4 +55,8 @@ input.search-depth {
 
 .search-result {
     margin-left: 120px;
+}
+
+label input {
+    vertical-align: middle;
 }

@@ -1,5 +1,6 @@
-package com.ghost;
+package com.ghost.config;
 
+import com.ghost.NoobleApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.web.SpringBootServletInitializer;
 

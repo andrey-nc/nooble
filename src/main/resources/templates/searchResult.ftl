@@ -17,7 +17,13 @@
         <div class="search-bg">
             <form method="get" action="/search">
                 <label class="nooble-little" for="query">
-                    <a href="/">${appName}:</a>
+                    <a href="/">
+                    <#if appName??>
+                        ${appName}:
+                    <#else>
+                        NULL
+                    </#if>
+                    </a>
                 </label>
                 <input class="uri" type="text" name="q" id="query" required/>
                 <input type="submit" value="Search" />
@@ -31,6 +37,13 @@
         </div>
         <div>
             ${searchResult}
+        </div>
+        <div>
+            <#if testVar??>
+            ${testVar}:
+            <#else>
+                NULL
+            </#if>
         </div>
     </div>
 

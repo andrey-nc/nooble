@@ -9,6 +9,7 @@ import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
+import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.io.FileFilter;
@@ -16,8 +17,9 @@ import java.io.FileReader;
 import java.io.IOException;
 
 /**
- *
+ *  Indexes row data files
  */
+@Component
 public class Indexer {
 
     private IndexWriter indexWriter;
@@ -51,9 +53,9 @@ public class Indexer {
         Field fileNameField = null;
         Field filePathField = null;
         if (file.exists() && !file.isDirectory()) {
-            contentField = new TextField(LuceneConstants.CONTENTS, new FileReader(file));
-            fileNameField = new TextField(LuceneConstants.FILE_NAME, file.getName(), Field.Store.YES);
-            filePathField = new TextField(LuceneConstants.FILE_PATH, file.getCanonicalPath(), Field.Store.YES);
+            contentField = new TextField(Constants.CONTENTS, new FileReader(file));
+            fileNameField = new TextField(Constants.FILE_NAME, file.getName(), Field.Store.YES);
+            filePathField = new TextField(Constants.FILE_PATH, file.getCanonicalPath(), Field.Store.YES);
         } else {
             throw new RuntimeException(String.format("File %s Not Found", file));
         }

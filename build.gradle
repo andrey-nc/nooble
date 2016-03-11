@@ -15,11 +15,6 @@ apply plugin: 'idea'
 apply plugin: 'java'
 apply plugin: 'spring-boot'
 
-jar {
-	baseName = 'nooble'
-	version = '0.0.1-SNAPSHOT'
-}
-
 repositories {
 	mavenLocal()
 	mavenCentral()

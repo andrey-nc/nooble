@@ -4,13 +4,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Component
 public class Page {
     Pattern linkPattern = Pattern.compile("<a\\s(?:[^\\s>]*?\\s)*?href=\"(.*?)\".*?>");
-    Pattern imageLinkPattern = Pattern.compile("<img.*?src=\"(.*?)\".*?(/>|</img>)", Pattern.DOTALL);
+    Pattern textPattern = Pattern.compile("<([A-Za-z][A-Za-z0-9]*)\\b[^>]*>(.*?)</\\1>", Pattern.DOTALL);
 
     private String content;
     private URL url;
@@ -42,8 +47,8 @@ public class Page {
      * @return list of URLs to images from that page.
      * @throws MalformedURLException
      */
-    public Collection<URL> getImageLinks() throws MalformedURLException {
-        return extractMatches(imageLinkPattern.matcher(content));
+    public Collection<URL> getText() {
+        return extractMatches(textPattern.matcher(content));
     }
 
     private Collection<URL> extractMatches(Matcher matcher) throws MalformedURLException {

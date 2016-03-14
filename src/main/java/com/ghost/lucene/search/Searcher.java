@@ -14,7 +14,6 @@ import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -31,10 +30,18 @@ public class Searcher {
     private QueryParser queryParser;
     private TopDocs resultDocs;
 
-    @Autowired
-    public Searcher(@Value("${lucene.index.directory}") String indexDirectoryPath) throws CreateDirectoryException {
+    @Value("${lucene.index.directory}")
+    private String indexPath;
+
+    public Searcher() {}
+
+    /**
+     * Initializes searcher. Locks the index directory, so you cant provide parallel index
+     * @throws CreateDirectoryException
+     */
+    private void init() throws CreateDirectoryException {
         try {
-            Directory indexDirectory = FSDirectory.open(Paths.get(indexDirectoryPath));
+            Directory indexDirectory = FSDirectory.open(Paths.get(indexPath));
             IndexReader indexReader = DirectoryReader.open(indexDirectory);
             indexSearcher = new IndexSearcher(indexReader);
             queryParser = new QueryParser(Constants.CONTENTS, new StandardAnalyzer());
@@ -45,7 +52,25 @@ public class Searcher {
         }
     }
 
-    public Collection<Document> search(String queryString) throws ParseException, IOException {
+
+/*
+    @Autowired
+    public Searcher(@Value("${lucene.index.directory}") String indexPath) throws CreateDirectoryException {
+        try {
+            Directory indexDirectory = FSDirectory.open(Paths.get(indexPath));
+            IndexReader indexReader = DirectoryReader.open(indexDirectory);
+            indexSearcher = new IndexSearcher(indexReader);
+            queryParser = new QueryParser(Constants.CONTENTS, new StandardAnalyzer());
+        } catch (InvalidPathException e) {
+            throw new CreateDirectoryException("Invalid path to index directory!", e);
+        } catch (IOException e) {
+            throw new CreateDirectoryException("Error open index directory!", e);
+        }
+    }
+*/
+
+    public Collection<Document> search(String queryString) throws IOException, ParseException, CreateDirectoryException {
+        init();
         Query query = queryParser.parse(queryString);
         resultDocs = indexSearcher.search(query, Constants.MAX_SEARCH);
         ScoreDoc[] hits = resultDocs.scoreDocs;

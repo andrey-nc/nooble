@@ -1,5 +1,6 @@
 package com.ghost.lucene.search;
 
+import com.ghost.lucene.exceptions.CreateDirectoryException;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +33,7 @@ public class SearchService {
      * @param queryString to find
      * @throws IOException
      */
-    public void search(String queryString) throws IOException, ParseException {
+    public void search(String queryString) throws IOException, ParseException, CreateDirectoryException {
 
         long startTime = System.currentTimeMillis();
         resultDocs = searcher.search(queryString);

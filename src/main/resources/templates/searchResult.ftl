@@ -21,7 +21,7 @@
                     <#if appName??>
                         ${appName}:
                     <#else>
-                        NULL
+                        nooble
                     </#if>
                     </a>
                 </label>
@@ -36,13 +36,19 @@
             Результатов: ${resultCount}
         </div>
         <div>
-            ${searchResult}
-        </div>
-        <div>
-            <#if testVar??>
-            ${testVar}:
-            <#else>
-                NULL
+            <#if results??>
+                <#list pages as page>
+                    <div class="page-title">
+                        <a href="${page.get("path")}">${page.get("title")}</a>
+                    </div>
+                    <div class="page-path">
+                        ${page.get("path")}
+                    </div>
+                    <div class="page-preview">
+                        <#--${page.get("preview")}-->
+                    </div>
+                    <br>
+                </#list>
             </#if>
         </div>
     </div>

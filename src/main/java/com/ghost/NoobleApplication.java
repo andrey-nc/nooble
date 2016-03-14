@@ -2,12 +2,12 @@ package com.ghost;
 
 import freemarker.template.Configuration;
 import freemarker.template.TemplateExceptionHandler;
-import freemarker.template.TemplateModelException;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.web.SpringBootServletInitializer;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 
 import java.util.Locale;
 
@@ -32,11 +32,11 @@ public class NoobleApplication extends SpringBootServletInitializer {
 		configuration.setDefaultEncoding("UTF-8");
 		configuration.setLocale(Locale.US);
 		configuration.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
-		try {
-			configuration.setSharedVariable("testVar","FreeMarker!!");
-		} catch (TemplateModelException e) {
-			throw new RuntimeException("FreeMarker error!", e);
-		}
 		return configuration;
+	}
+
+	@Bean
+	public PropertySourcesPlaceholderConfigurer configurer() {
+		return new PropertySourcesPlaceholderConfigurer();
 	}
 }

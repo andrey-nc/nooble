@@ -21,11 +21,29 @@
             <br>
             <label>
                 Глубина рекурсии:
-                <input class="uri" type="range" name="searchDepth"/>
+                <input class="text" type="range" name="searchDepth"/>
             </label>
             <input type="submit" value="Index" />
         </form>
     </div>
+    <div>
+        <#if indexCount??>
+            <div class="message">
+                Indexed pages: ${indexCount}:
+            </div>
+        </#if>
+    </div>
+    <div>
+        <#if INDEX_STATUS??>
+            ${INDEX_STATUS}:
+        </#if>
+    </div>
+    <div>
+    <#if URL_STATUS??>
+        ${URL_STATUS}:
+    </#if>
+    </div>
+
 
 </body>
 </html>

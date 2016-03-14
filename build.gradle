@@ -34,6 +34,7 @@ dependencies {
 	compile('org.apache.lucene:lucene-core:5.5.0')
 	compile('org.apache.lucene:lucene-analyzers-common:5.5.0')
 	compile('org.springframework.boot:spring-boot-starter-web')
+	compile('org.jsoup:jsoup:1.8.3')
 	providedRuntime('org.springframework.boot:spring-boot-starter-tomcat')
 	testCompile('org.springframework.boot:spring-boot-starter-test') 
 }

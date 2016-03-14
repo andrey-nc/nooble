@@ -1,4 +1,4 @@
-package com.ghost.lucene;
+package com.ghost.lucene.exceptions;
 
 public class CreateDirectoryException extends Exception {
 

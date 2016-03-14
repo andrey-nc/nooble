@@ -14,6 +14,7 @@ public class Page extends AbstractPage{
     Pattern linkPattern = Pattern.compile("<a\\s(?:[^\\s>]*?\\s)*?href=\"(.*?)\".*?>");
     // TODO: check rexexp
     Pattern textPattern = Pattern.compile("<([A-Za-z][A-Za-z0-9]*)\\b[^>]*>(.*?)</\\1>", Pattern.DOTALL);
+    Pattern titlePattern = Pattern.compile("<title>(.*?)</title>");
 
     private String content;
 
@@ -41,6 +42,19 @@ public class Page extends AbstractPage{
             text.append(matcher.group(1)).append(" ");
         }
         return text.toString();
+    }
+
+    /**
+     * Extracts title
+     * @return title
+     */
+    @Override
+    public String getTitle() {
+        return extractTitle(titlePattern.matcher(content));
+    }
+
+    public String extractTitle(Matcher matcher) {
+        return matcher.find() ? matcher.group(1) : url.toString();
     }
 
     /**

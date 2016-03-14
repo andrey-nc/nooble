@@ -31,6 +31,11 @@ public class JsoupPage extends AbstractPage {
     }
 
     @Override
+    public String getTitle() {
+        return document.title();
+    }
+
+    @Override
     public Collection<URL> getLinks() throws IOException {
         Elements linkElements = document.select("a[href]");
         Set<String> links = linkElements

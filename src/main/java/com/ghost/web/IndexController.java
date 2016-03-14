@@ -1,6 +1,6 @@
 package com.ghost.web;
 
-import com.ghost.lucene.IndexService;
+import com.ghost.lucene.index.IndexService;
 import com.ghost.source.ConnectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;

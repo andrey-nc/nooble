@@ -27,6 +27,12 @@ public abstract class AbstractPage {
     public abstract String getText();
 
     /**
+     * Extracts title from the source
+     * @return
+     */
+    public abstract String getTitle();
+
+    /**
      * Extracts all links from the page like <a href={link}>text</a>
      * @return
      */

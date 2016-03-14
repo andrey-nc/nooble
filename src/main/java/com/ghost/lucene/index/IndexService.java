@@ -1,8 +1,5 @@
-package com.ghost.lucene;
+package com.ghost.lucene.index;
 
-import com.ghost.source.AbstractPage;
-import com.ghost.source.JsoupPage;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.annotation.Scope;
@@ -11,6 +8,9 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Collection;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Uses Indexer to index URL source
@@ -20,31 +20,21 @@ import java.util.Collection;
 @PropertySource("classpath:lucene.properties")
 public class IndexService {
 
-    private static final String URL_FILENAME_PATTERN = "[^a-zA-Z0-9-_\\.]";
+    //number of threads to index pages simultaneously
+    @Value("${lucene.index.threads}")
+    private int numberOfThreads;
 
-    private static final String FILENAME_PARTS_SEPARATOR = "_";
-
+    // URL Indexing depth level
     @Value("${lucene.index.depth}")
     private int maxIndexDepth;
+
+    private ExecutorService executorService = Executors.newFixedThreadPool(numberOfThreads);
 
     private int currentDepth = 0;
 
     private int indexCount = 0;
 
     private long indexTime = 0;
-
-    @Autowired
-    private Indexer indexer;
-
-/*
-    @Autowired
-    private TextFileFilter filter;
-*/
-
-/*
-    @Autowired
-    private Environment environment;
-*/
 
     public IndexService() {}
 
@@ -59,7 +49,9 @@ public class IndexService {
         indexCount = 0;
         long startTime = System.currentTimeMillis();
         try {
-            indexRoutine(sourceLink, currentDepth);
+            IndexTask task = new IndexTask(sourceLink);
+            executorService.execute(task);
+            indexRoutine(currentDepth, task.getLinks());
         } catch (StackOverflowError e) {
             System.out.println("Depth = " + currentDepth + " IndexCount : " + indexCount);
             e.printStackTrace();
@@ -69,22 +61,37 @@ public class IndexService {
 
     /**
      * Recursive indexing routine
-     * @param sourceLink
+     * @param depth of Recursive
+     * @param links for indexing
      * @throws IOException
      */
-    private void indexRoutine(URL sourceLink, int depth) throws IOException {
+    private void indexRoutine(int depth, Collection<URL> links) throws IOException {
         if (depth < maxIndexDepth) {
-            indexCount++;
-            AbstractPage page = new JsoupPage(sourceLink);
-            String text = page.getText();
-            indexer.indexSource(text, buildFileName(sourceLink), sourceLink.toString());
-            Collection<URL> links = page.getLinks();
+            IndexTask task;
             for (URL link: links) {
-                indexRoutine(link, currentDepth);
+                task = new IndexTask(link);
+                executorService.execute(task);
+                indexCount++;
+                indexRoutine(++currentDepth, task.getLinks());
             }
         } else {
             currentDepth = 0;
         }
+    }
+
+    /**
+     * Call this method before shutdown an application
+     */
+    public void stop() {
+        executorService.shutdown();
+    }
+
+    /**
+     *  Method waits while all tasks have finished
+     */
+    public void awaitTermination() throws InterruptedException {
+        executorService.shutdown();
+        executorService.awaitTermination(1, TimeUnit.MINUTES);
     }
 
     public long getIndexTime() {
@@ -93,14 +100,5 @@ public class IndexService {
 
     public int getIndexCount() {
         return indexCount;
-    }
-
-    /**
-     * Converts url to unique file name, replacing all symbols in url with "_" except letters and numbers
-     * @param url to convert
-     * @return url based unique file name
-     */
-    private String buildFileName(URL url) {
-        return url.toString().replaceAll(URL_FILENAME_PATTERN, FILENAME_PARTS_SEPARATOR);
     }
 }

@@ -1,8 +1,5 @@
 package com.ghost.source;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -12,25 +9,38 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-@Component
-public class Page {
+public class Page extends AbstractPage{
+
     Pattern linkPattern = Pattern.compile("<a\\s(?:[^\\s>]*?\\s)*?href=\"(.*?)\".*?>");
+    // TODO: check rexexp
     Pattern textPattern = Pattern.compile("<([A-Za-z][A-Za-z0-9]*)\\b[^>]*>(.*?)</\\1>", Pattern.DOTALL);
 
     private String content;
-    private URL url;
 
-    @Autowired
-    private URLSourceProvider urlSourceProvider;
+    public Page(URL url) throws IOException {
+        super(url);
+        this.content = getContent();
+    }
+
+    protected String getContent() throws IOException {
+        return ConnectionUtils.loadText(url.toString());
+    }
 
     /**
-     * Be careful, constructor downloads content, it could be slow.
-     * @param url to page with links
-     * @throws IOException
+     * Extracts plain text from the page excluding tags like </tag> text </tag>.
+     * @return plain text without tags from that page.
      */
-    public Page(URL url) throws IOException {
-        this.url = url;
-        this.content = new String(urlSourceProvider.load(url));
+    @Override
+    public String getText() {
+        return extractText(textPattern.matcher(content));
+    }
+
+    public String extractText(Matcher matcher) {
+        StringBuilder text = new StringBuilder();
+        while(matcher.find()) {
+            text.append(matcher.group(1)).append(" ");
+        }
+        return text.toString();
     }
 
     /**
@@ -38,20 +48,12 @@ public class Page {
      * @return list of URLs from that page.
      * @throws MalformedURLException
      */
-    public Collection<URL> getLinks() throws MalformedURLException {
-        return extractMatches(linkPattern.matcher(content));
+    @Override
+    public Collection<URL> getLinks() throws IOException {
+            return extractMatches(linkPattern.matcher(content));
     }
 
-    /**
-     * Extracts all links to images from the page like <img src={link}/>. Method does not cache content. Each time new list will be returned.
-     * @return list of URLs to images from that page.
-     * @throws MalformedURLException
-     */
-    public Collection<URL> getText() {
-        return extractMatches(textPattern.matcher(content));
-    }
-
-    private Collection<URL> extractMatches(Matcher matcher) throws MalformedURLException {
+    private Collection<URL> extractMatches(Matcher matcher) throws IOException {
         Set<URL> links = new HashSet<>();
         while(matcher.find()) {
             links.add(new URL(url, matcher.group(1)));

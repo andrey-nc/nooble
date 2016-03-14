@@ -2,15 +2,12 @@ package com.ghost.lucene.index;
 
 import com.ghost.source.AbstractPage;
 import com.ghost.source.JsoupPage;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.net.URL;
 import java.util.Collection;
 import java.util.HashSet;
 
-@Component
 public class IndexTask implements Runnable {
 
     private static final String URL_FILENAME_PATTERN = "[^a-zA-Z0-9-_\\.]";
@@ -21,12 +18,12 @@ public class IndexTask implements Runnable {
 
     private Collection<URL> links;
 
-    @Autowired
     private Indexer indexer;
 
-    public IndexTask(URL link) {
+    public IndexTask(URL link, Indexer indexer) {
         this.link = link;
         this.links = new HashSet<>();
+        this.indexer = indexer;
     }
 
     public Collection<URL> getLinks() {

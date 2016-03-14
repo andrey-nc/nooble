@@ -12,12 +12,10 @@ import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.io.*;
-import java.nio.file.InvalidPathException;
 import java.nio.file.Paths;
 
 /**
@@ -28,25 +26,30 @@ public class Indexer {
 
     private IndexWriter indexWriter;
 
+    @Value("${lucene.index.directory}")
+    private String indexPath;
+
+    public Indexer() {}
+
     /**
-     * Creates new IndexWriter instance
-     * @param indexPath for storing indexes
-     * @throws IOException
+     * Creates new IndexWriter instance. Locks the index directory, so you cant provide parallel search
+     * @throws CreateDirectoryException
      */
-    @Autowired
-    public Indexer(@Value("${lucene.index.directory}") String indexPath) throws CreateDirectoryException {
+    public void init() throws IOException {
         System.out.println("Indexer - lucene.index.directory = " + indexPath);
+        Directory indexDirectory = FSDirectory.open(Paths.get(indexPath));
+        Analyzer analyzer = new StandardAnalyzer();
+        IndexWriterConfig config = new IndexWriterConfig(analyzer);
+        config.setOpenMode(IndexWriterConfig.OpenMode.CREATE);
+        indexWriter = new IndexWriter(indexDirectory, config);
+/*
         try {
-            Directory indexDirectory = FSDirectory.open(Paths.get(indexPath));
-            Analyzer analyzer = new StandardAnalyzer();
-            IndexWriterConfig config = new IndexWriterConfig(analyzer);
-            config.setOpenMode(IndexWriterConfig.OpenMode.CREATE);
-            indexWriter = new IndexWriter(indexDirectory, config);
         } catch (InvalidPathException e) {
             throw new CreateDirectoryException("Invalid path to index directory!", e);
         } catch (IOException e) {
             throw new CreateDirectoryException("Error read/write index directory!", e);
         }
+*/
     }
 
     public void close() throws IOException{

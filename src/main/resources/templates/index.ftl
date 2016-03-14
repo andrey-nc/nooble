@@ -16,12 +16,12 @@
         <form name="search" method="post">
             <label>
                 URI:
-                <input class="uri" type="text" name="q" required/>
+                <input class="uri" type="text" name="q" required value="<#if uri??>${uri}</#if>"/>
             </label>
             <br>
             <label>
                 Глубина рекурсии:
-                <input class="text" type="range" name="searchDepth"/>
+                1<input class="text" type="range" name="depth" min="1" max="100" value="3"/>100
             </label>
             <input type="submit" value="Index" />
         </form>
@@ -35,13 +35,17 @@
     </div>
     <div>
         <#if INDEX_STATUS??>
-            ${INDEX_STATUS}:
+            <div class="message">
+                ${INDEX_STATUS}:
+            </div>
         </#if>
     </div>
     <div>
-    <#if URL_STATUS??>
-        ${URL_STATUS}:
-    </#if>
+        <#if URL_STATUS??>
+            <div class="message">
+                ${URL_STATUS}:
+            </div>
+        </#if>
     </div>
 
 

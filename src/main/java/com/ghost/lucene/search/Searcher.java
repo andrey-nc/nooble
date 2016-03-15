@@ -1,7 +1,6 @@
 package com.ghost.lucene.search;
 
 import com.ghost.lucene.Constants;
-import com.ghost.lucene.exceptions.CreateDirectoryException;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.DirectoryReader;
@@ -18,7 +17,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.nio.file.InvalidPathException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -37,19 +35,12 @@ public class Searcher {
 
     /**
      * Initializes searcher. Locks the index directory, so you cant provide parallel index
-     * @throws CreateDirectoryException
      */
-    private void init() throws CreateDirectoryException {
-        try {
-            Directory indexDirectory = FSDirectory.open(Paths.get(indexPath));
-            IndexReader indexReader = DirectoryReader.open(indexDirectory);
-            indexSearcher = new IndexSearcher(indexReader);
-            queryParser = new QueryParser(Constants.CONTENTS, new StandardAnalyzer());
-        } catch (InvalidPathException e) {
-            throw new CreateDirectoryException("Invalid path to index directory!", e);
-        } catch (IOException e) {
-            throw new CreateDirectoryException("Error open index directory!", e);
-        }
+    private void init() throws IOException {
+        Directory indexDirectory = FSDirectory.open(Paths.get(indexPath));
+        IndexReader indexReader = DirectoryReader.open(indexDirectory);
+        indexSearcher = new IndexSearcher(indexReader);
+        queryParser = new QueryParser(Constants.CONTENTS, new StandardAnalyzer());
     }
 
 
@@ -69,7 +60,7 @@ public class Searcher {
     }
 */
 
-    public Collection<Document> search(String queryString) throws IOException, ParseException, CreateDirectoryException {
+    public Collection<Document> search(String queryString) throws IOException, ParseException {
         init();
         Query query = queryParser.parse(queryString);
         resultDocs = indexSearcher.search(query, Constants.MAX_SEARCH);

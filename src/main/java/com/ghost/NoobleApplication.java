@@ -2,6 +2,8 @@ package com.ghost;
 
 import freemarker.template.Configuration;
 import freemarker.template.TemplateExceptionHandler;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
@@ -14,9 +16,11 @@ import java.util.Locale;
 @SpringBootApplication
 public class NoobleApplication extends SpringBootServletInitializer {
 
+	public static Logger log = LoggerFactory.getLogger(NoobleApplication.class.getName());
+
 	public static void main(String[] args) {
 		SpringApplication.run(NoobleApplication.class, args);
-		System.out.println(NoobleApplication.class);
+		log.info("Nooble started: " + NoobleApplication.class);
 	}
 
 	@Override

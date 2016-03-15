@@ -11,6 +11,13 @@ Frameworks
  - Lucene
  - Gradle
  - FreeMarker
+ - Jsoup
+ - lsf4j
+ - java concurrency
+ - java 8 (lambda, stream)
  
 Web-server
  - Apache Tomcat 
+
+IDE
+ - InteliJ Idea 15

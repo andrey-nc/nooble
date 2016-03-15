@@ -1,6 +1,5 @@
 package com.ghost.web;
 
-import com.ghost.lucene.exceptions.CreateDirectoryException;
 import com.ghost.lucene.search.Searcher;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,8 +45,6 @@ public class SearchController {
             map.put("pages", searcher.search(query));
         } catch (ParseException e) {
             map.put("PARSE_ERROR", messageSource.getMessage("search.error.parse", null, locale));
-        } catch (CreateDirectoryException e) {
-            map.put("PATH_ERROR", messageSource.getMessage("search.error.path", null, locale));
         } catch (IOException e) {
             map.put("DIRECTORY_ERROR", messageSource.getMessage("search.error.directory", null, locale));
             e.printStackTrace();

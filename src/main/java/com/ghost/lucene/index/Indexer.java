@@ -1,7 +1,7 @@
 package com.ghost.lucene.index;
 
+import com.ghost.NoobleApplication;
 import com.ghost.lucene.Constants;
-import com.ghost.lucene.exceptions.CreateDirectoryException;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
@@ -33,23 +33,14 @@ public class Indexer {
 
     /**
      * Creates new IndexWriter instance. Locks the index directory, so you cant provide parallel search
-     * @throws CreateDirectoryException
      */
     public void init() throws IOException {
-        System.out.println("Indexer - lucene.index.directory = " + indexPath);
+        NoobleApplication.log.info("Index directory: {}", indexPath);
         Directory indexDirectory = FSDirectory.open(Paths.get(indexPath));
         Analyzer analyzer = new StandardAnalyzer();
         IndexWriterConfig config = new IndexWriterConfig(analyzer);
         config.setOpenMode(IndexWriterConfig.OpenMode.CREATE);
         indexWriter = new IndexWriter(indexDirectory, config);
-/*
-        try {
-        } catch (InvalidPathException e) {
-            throw new CreateDirectoryException("Invalid path to index directory!", e);
-        } catch (IOException e) {
-            throw new CreateDirectoryException("Error read/write index directory!", e);
-        }
-*/
     }
 
     public void close() throws IOException{
@@ -119,12 +110,13 @@ public class Indexer {
     /**
      * Creates index of all files in the specified directory, excluding filtered ones
      * @param dataDirPath specifies search directory
-     * @param filter
-     * @return
+     * @param filter for indexed file types
+     * @return number of indexed documents
      * @throws IOException
      */
     public int indexDirectory(String dataDirPath, FileFilter filter) throws IOException{
         File[] files = new File(dataDirPath).listFiles();
+        assert files != null;
         for (File file : files) {
             if(!file.isDirectory() && !file.isHidden() && file.exists() && file.canRead() && filter.accept(file)) {
                 indexFile(file);

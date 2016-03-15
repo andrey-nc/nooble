@@ -1,5 +1,6 @@
 package com.ghost.lucene.index;
 
+import com.ghost.NoobleApplication;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
@@ -7,11 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.net.URL;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 /**
  * Uses Indexer to index URL source
@@ -24,7 +21,7 @@ public class IndexService {
     @Value("${lucene.index.threads}")
     private int numberOfThreads;
 
-    // URL Indexing depth level
+    // URL Indexing depth level. Be careful, for values > 2 time indexing will greatly increase
     @Value("${lucene.index.depth}")
     private int maxIndexDepth;
 
@@ -32,74 +29,47 @@ public class IndexService {
     private Indexer indexer;
 
     private ExecutorService executorService;
-
-    private int currentDepth = 0;
-
     private int indexCount = 0;
-
     private long indexTime = 0;
-
-    private Collection<URL> indexedLinks = new HashSet<>();
 
     public IndexService() {}
 
     /**
-     * Call this method to start index page from specified URL.
+     * Call this method to start multithreading recursive index page from specified URL.
+     * Be careful, for maxIndexDepth values > 2 time indexing will greatly increase
      * @param sourceLink for index
      * @throws IOException
     */
-
     public void index(URL sourceLink) throws IOException {
 
-        init();
-        currentDepth = 0;
-        indexCount = 0;
         long startTime = System.currentTimeMillis();
+        init();
+        indexer.init();
         try {
-            indexer.init();
-            IndexTask task = new IndexTask(sourceLink, indexer);
-            executorService.execute(task);
-            indexRoutine(currentDepth, task.getLinks());
-            indexer.close();
-
-
-        } catch (StackOverflowError e) {
-            System.out.println("Depth = " + currentDepth + " IndexCount : " + indexCount);
-            e.printStackTrace();
-        }
-        indexTime = System.currentTimeMillis() - startTime;
-        stop();
-    }
-
-    /**
-     * Recursive indexing routine
-     * @param depth of Recursive
-     * @param links for indexing
-     * @throws IOException
-    */
-
-    private void indexRoutine(int depth, Collection<URL> links) throws IOException {
-        if (depth < maxIndexDepth) {
-            indexedLinks.addAll(links);
-            currentDepth = depth;
-            IndexTask task;
-            for (URL link: links) {
-                task = new IndexTask(link, indexer);
-                executorService.execute(task);
-                indexCount++;
-                indexRoutine(++depth, task.getLinks());
-
-
+            Future<Integer> future = executorService.submit(new IndexTask(sourceLink, indexer, maxIndexDepth, numberOfThreads));
+            indexCount = future.get();
+            if (future.isDone()) {
+                NoobleApplication.log.info("Indexed: " + indexCount);
             }
+        } catch (StackOverflowError e) {
+            NoobleApplication.log.error("Stack overflow!", e);
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            NoobleApplication.log.error("Interrupted thread: " + Thread.currentThread().getName(), e);
+        } catch (ExecutionException e) {
+            NoobleApplication.log.error("Exception in thread: " + Thread.currentThread().getName(), e);
         }
+        indexer.close();
+        stop();
+        indexTime = System.currentTimeMillis() - startTime;
+        NoobleApplication.log.info("Index time: " + indexTime);
     }
 
     /**
      * Executor initialization
      */
     public void init() {
-        executorService = Executors.newFixedThreadPool(numberOfThreads);
-
+        executorService = Executors.newSingleThreadExecutor();
     }
 
     /**
@@ -123,14 +93,6 @@ public class IndexService {
 
     public int getIndexCount() {
         return indexCount;
-    }
-
-    public Collection<URL> getIndexedLinks() {
-        return indexedLinks;
-    }
-
-    public boolean isIndexed(URL url) {
-        return indexedLinks.contains(url);
     }
 
     public void setMaxIndexDepth(int maxIndexDepth) {

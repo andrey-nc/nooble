@@ -1,22 +1,26 @@
 package com.ghost.web;
 
+import com.ghost.NoobleApplication;
 import com.ghost.lucene.index.IndexService;
 import com.ghost.source.ConnectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Collection;
+import java.util.HashSet;
 import java.util.Locale;
 
 @Controller
+@Scope("session")
 @RequestMapping("/index")
 public class IndexController {
 
@@ -26,53 +30,53 @@ public class IndexController {
     @Autowired
     private MessageSource messageSource;
 
-/*
-    @Autowired
-    public IndexController(IndexService indexService) {
-        this.indexService = indexService;
-    }
-*/
-
     @RequestMapping(method = RequestMethod.GET)
     public String indexForm() {
         System.out.println("IndexController - indexRequest");
         return "index";
     }
 
+    private Collection<URL> indexedLinks = new HashSet<>();
+
     @RequestMapping(method = RequestMethod.POST)
-//    @Scope("session")
-    public String indexSubmit(@RequestParam("q") String uri,
+    public ModelMap indexSubmit(@RequestParam("q") String query,
                               @RequestParam int depth,
                               ModelMap map,
-                              HttpServletResponse response,
                               Locale locale) {
-        System.out.println("IndexController - index: " + uri);
-        //request.getSession().setAttribute("pages", "dsfsf");
-        System.out.println("response.getContentType = " + response.getContentType());
+        NoobleApplication.log.info("Index request {}", query);
+        map.put("query", query);
         try {
-            if (ConnectionUtils.isAllowed(uri)) {
-                if (indexService.isIndexed(new URL(uri))) {
+            URL url = new URL(query);
+            if (ConnectionUtils.isAllowed(url)) {
+                if (isIndexed(url)) {
                     map.put("INDEX_STATUS", messageSource.getMessage("index.exist", null, locale));
-                    return "redirect:/index?q=" + uri;
+                    return new ModelMap("redirect:/index?q=" + query);
                 }
                 indexService.setMaxIndexDepth(depth);
-                indexService.index(new URL(uri));
+                indexService.index(url);
+                addToIndex(url);
                 map.put("indexCount", indexService.getIndexCount());
                 map.put("indexTime", indexService.getIndexTime());
-                map.put("INDEX_STATUS", messageSource.getMessage("index.success", null, locale));
+                map.put("status.success", messageSource.getMessage("index.success", null, locale));
             } else {
-                map.put("URL_STATUS", messageSource.getMessage("url.unreachable", null, locale));
-                map.put("errorQuery", uri);
-                return "redirect:/index";
+                map.put("status.error", messageSource.getMessage("url.unreachable", null, locale));
+                return new ModelMap("redirect:/index");
             }
         } catch (MalformedURLException e) {
-            map.put("URL_STATUS", messageSource.getMessage("url.malformed", null, locale));
-            map.put("errorQuery", uri);
-            return "redirect:/index";
+            map.put("status.error", messageSource.getMessage("url.malformed", null, locale));
+            return new ModelMap("redirect:/index");
         } catch (IOException e) {
-            map.put("INDEX_STATUS", messageSource.getMessage("index.fail", null, locale));
+            map.put("status.error", messageSource.getMessage("index.fail", null, locale));
             e.printStackTrace();
         }
-        return "redirect:/index?q=" + uri;
+        return new ModelMap("redirect:/index?q=" + query);
+    }
+
+    private boolean isIndexed(URL url) {
+        return indexedLinks.contains(url);
+    }
+
+    private boolean addToIndex(URL url) {
+        return indexedLinks.add(url);
     }
 }

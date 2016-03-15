@@ -14,13 +14,28 @@ url("/");
     margin: 5px;
 }
 
-.message {
-    font: bold normal 100% "Arial";
+.block-ok {
     background-color: #f4ffd7;
     text-align: center;
     padding: 2px 5px;
     border: solid 1px green;
     margin: 0 auto;
+}
+
+.block-error {
+    font: bold normal 100% "Arial";
+    background-color: #ffd5e5;
+    text-align: center;
+    padding: 2px 5px;
+    border: solid 1px red;
+    margin: 0 auto;
+}
+
+.status {
+    margin-top: 50px;
+    font-family: Arial, sans-serif;
+    font-size: medium;
+    text-align: center;
 }
 
 .search-bg {

@@ -10,11 +10,10 @@ public class ConnectionUtils {
 
     /**
      * Detects is current url is valid (exist and reachable)
-     * @param pathToSource
+     * @param url to source
      */
-    public static boolean isAllowed(String pathToSource) throws IOException {
+    public static boolean isAllowed(URL url) throws IOException {
 
-        URL url = new URL(pathToSource);
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
         connection.setRequestMethod("HEAD");
         int responseCode = connection.getResponseCode();
@@ -53,7 +52,7 @@ public class ConnectionUtils {
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(url.openStream()))) {
             String row;
             while ((row = reader.readLine()) != null) {
-                content.append(row + "\n");
+                content.append(row).append("\n");
             }
         }
         return content.toString();

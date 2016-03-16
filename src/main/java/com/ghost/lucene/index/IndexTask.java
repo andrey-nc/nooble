@@ -49,7 +49,7 @@ public class IndexTask implements Callable<Integer> {
      * @return number of indexed pages
      * @throws IOException
      */
-    private int index(AbstractPage page) throws Exception {
+    private int index(AbstractPage page) throws IOException, InterruptedException {
         depth--;
         Collection<URL> links = page.getLinks();
         NoobleApplication.log.info("Link count: " + links.size());
@@ -62,13 +62,13 @@ public class IndexTask implements Callable<Integer> {
         int indexed = executorService.invokeAll(tasks)
                 .stream()
                 .mapToInt(future -> {
-                    int num = 0;
+                    Integer num = 0;
                     try {
                         num = future.get();
-                    } catch (InterruptedException | ExecutionException e) {
-                        e.printStackTrace();
+                    } catch (Exception e) {
+                        NoobleApplication.log.error("Exception future get: {}", num);
                     }
-                    return num;
+                    return num == null ? 0: num;
                 })
                 .sum();
 

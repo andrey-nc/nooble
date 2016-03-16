@@ -25,7 +25,6 @@ public class IndexTask implements Callable<Integer> {
     private int depth;
 
     public IndexTask(URL link, Indexer indexer, int depth, int numberOfThreads) {
-        NoobleApplication.log.info("[depth: " + depth + "] url: " + link);
         this.link = link;
         this.indexer = indexer;
         this.depth = depth;

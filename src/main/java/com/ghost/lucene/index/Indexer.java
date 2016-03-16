@@ -26,20 +26,21 @@ public class Indexer {
 
     private IndexWriter indexWriter;
 
+    // Check this field in lucene.properties as it depends on OS
     @Value("${lucene.index.directory}")
     private String indexPath;
 
     public Indexer() {}
 
     /**
-     * Creates new IndexWriter instance. Locks the index directory, so you cant provide parallel search
+     * Creates new IndexWriter instance. Locks the index directory, so one cant provide parallel search
      */
     public void init() throws IOException {
         NoobleApplication.log.info("Index directory: {}", indexPath);
         Directory indexDirectory = FSDirectory.open(Paths.get(indexPath));
         Analyzer analyzer = new StandardAnalyzer();
         IndexWriterConfig config = new IndexWriterConfig(analyzer);
-        config.setOpenMode(IndexWriterConfig.OpenMode.CREATE);
+        config.setOpenMode(IndexWriterConfig.OpenMode.CREATE_OR_APPEND);
         indexWriter = new IndexWriter(indexDirectory, config);
     }
 

@@ -57,16 +57,16 @@ public class IndexController {
                 addToIndex(url);
                 map.put("indexCount", indexService.getIndexCount());
                 map.put("indexTime", indexService.getIndexTime());
-                map.put("status.success", messageSource.getMessage("index.success", null, locale));
+                map.put("statusSuccess", messageSource.getMessage("index.success", null, locale));
             } else {
-                map.put("status.error", messageSource.getMessage("url.unreachable", null, locale));
+                map.put("statusError", messageSource.getMessage("url.unreachable", null, locale));
                 return new ModelMap("redirect:/index");
             }
         } catch (MalformedURLException e) {
-            map.put("status.error", messageSource.getMessage("url.malformed", null, locale));
+            map.put("statusError", messageSource.getMessage("url.malformed", null, locale));
             return new ModelMap("redirect:/index");
         } catch (IOException e) {
-            map.put("status.error", messageSource.getMessage("index.fail", null, locale));
+            map.put("statusError", messageSource.getMessage("index.fail", null, locale));
             e.printStackTrace();
         }
         return new ModelMap("redirect:/index?q=" + query);

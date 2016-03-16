@@ -1,13 +1,15 @@
 package com.ghost.lucene.search;
 
-import org.apache.lucene.document.Document;
+import com.ghost.lucene.Constants;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.nio.file.InvalidPathException;
 import java.util.Collection;
+import java.util.HashSet;
 
 /**
  * Uses Indexer to index URL source
@@ -18,12 +20,7 @@ public class SearchService {
 
     @Autowired
     private Searcher searcher;
-
     private long indexTime;
-
-    private int totalHits;
-
-    private Collection<Document> resultDocs;
 
     public SearchService() {}
 
@@ -32,12 +29,20 @@ public class SearchService {
      * @param queryString to find
      * @throws IOException
      */
-    public void search(String queryString) throws IOException, ParseException {
+    public Collection<SearchDocument> search(String queryString) throws InvalidPathException, IOException, ParseException {
 
         long startTime = System.currentTimeMillis();
-        resultDocs = searcher.search(queryString);
+        Collection<SearchDocument> docs = new HashSet<>();
+        searcher.search(queryString)
+                .stream()
+                .forEach(doc -> {
+                    String contents = doc.get(Constants.CONTENTS);
+                    String path = doc.get(Constants.SOURCE_PATH);
+                    String title = doc.get(Constants.SOURCE_TITLE);
+                    docs.add(new SearchDocument(title, contents, path));
+                });
         indexTime = System.currentTimeMillis() - startTime;
-        totalHits = searcher.getTotalHits();
+        return docs;
     }
 
     public long getIndexTime() {
@@ -45,10 +50,6 @@ public class SearchService {
     }
 
     public int getTotalHits() {
-        return totalHits;
-    }
-
-    public Collection<Document> getResultDocs() {
-        return resultDocs;
+        return searcher.getTotalHits();
     }
 }

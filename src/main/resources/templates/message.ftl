@@ -9,15 +9,15 @@
     </#if>
 </div>
 <div>
-    <#if status.error??>
+    <#if statusError??>
         <div class="status">
-        ${status.error}: <#if query??> ${query} </#if>
+        ${statusError}: <#if query??> ${query} </#if>
         </div>
     </#if>
 
-    <#if status.success??>
+    <#if statusEuccess??>
         <div class="status">
-        ${status.success}: <#if query??> ${query} </#if>
+        ${statusSuccess}: <#if query??> ${query} </#if>
         </div>
     </#if>
 </div>

@@ -17,6 +17,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
+import java.nio.file.InvalidPathException;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -36,31 +37,14 @@ public class Searcher {
     /**
      * Initializes searcher. Locks the index directory, so you cant provide parallel index
      */
-    private void init() throws IOException {
+    private void init() throws InvalidPathException, IOException {
         Directory indexDirectory = FSDirectory.open(Paths.get(indexPath));
         IndexReader indexReader = DirectoryReader.open(indexDirectory);
         indexSearcher = new IndexSearcher(indexReader);
         queryParser = new QueryParser(Constants.CONTENTS, new StandardAnalyzer());
     }
 
-
-/*
-    @Autowired
-    public Searcher(@Value("${lucene.index.directory}") String indexPath) throws CreateDirectoryException {
-        try {
-            Directory indexDirectory = FSDirectory.open(Paths.get(indexPath));
-            IndexReader indexReader = DirectoryReader.open(indexDirectory);
-            indexSearcher = new IndexSearcher(indexReader);
-            queryParser = new QueryParser(Constants.CONTENTS, new StandardAnalyzer());
-        } catch (InvalidPathException e) {
-            throw new CreateDirectoryException("Invalid path to index directory!", e);
-        } catch (IOException e) {
-            throw new CreateDirectoryException("Error open index directory!", e);
-        }
-    }
-*/
-
-    public Collection<Document> search(String queryString) throws IOException, ParseException {
+    public Collection<Document> search(String queryString) throws InvalidPathException, IOException, ParseException {
         init();
         Query query = queryParser.parse(queryString);
         resultDocs = indexSearcher.search(query, Constants.MAX_SEARCH);

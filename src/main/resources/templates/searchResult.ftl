@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-    <title>nooble - search result</title>
+    <title>${query!"search"} - ${appName!"nooble"}</title>
     <link rel="stylesheet" type="text/css" media="all" href="/css/styles.css" />
     <link rel="stylesheet" type="text/css" media="all" href="/webjars/bootstrap/4.0.0-alpha.2/css/bootstrap.min.css" />
 </head>
@@ -17,15 +17,9 @@
         <div class="search-bg">
             <form method="get" action="/search">
                 <label class="nooble-little" for="query">
-                    <a href="/">
-                    <#if appName??>
-                        ${appName}:
-                    <#else>
-                        nooble
-                    </#if>
-                    </a>
+                    <a href="/">${appName!"nooble"}</a>
                 </label>
-                <input class="uri" type="text" name="q" id="query" required/>
+                <input class="uri" type="text" name="q" id="query" value="${query!""}" required/>
                 <input type="submit" value="Search" />
             </form>
         </div>
@@ -33,16 +27,16 @@
     <br>
     <div class="search-result">
         <div class="result-text">
-            Результатов: ${resultCount}
+            Результатов: ${pages?size}
         </div>
-        <div>
-            <#if results??>
+        <div class="results" id="results">
+            <#if pages??>
                 <#list pages as page>
-                    <div class="page-title">
-                        <a href="${page.get("path")}">${page.get("title")}</a>
-                    </div>
+                    <h3 class="page-title">
+                        <a href="${page.path}">${page.title}</a>
+                    </h3>
                     <div class="page-path">
-                        ${page.get("path")}
+                        ${page.path}
                     </div>
                     <div class="page-preview">
                         <#--${page.get("preview")}-->

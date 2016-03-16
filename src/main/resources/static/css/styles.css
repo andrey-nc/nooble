@@ -1,10 +1,22 @@
+body, html, h2, h1 {
+    font-family: arial,sans-serif;
+}
+
+a:link, a:visited, a:active {
+    color: #1a0dab;
+}
+
+#results h3 {
+    font-size: 18px;
+}
+
 .nooble {
     font: bold normal 500% "Candara";
     color: #39a0ff;
     text-align: center;
     padding: 2px 5px;
     margin-top: 100px;
-url("/");
+    url("/");
 }
 
 .nooble-little {

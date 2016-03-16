@@ -1,6 +1,8 @@
 package com.ghost.web;
 
-import com.ghost.lucene.search.Searcher;
+import com.ghost.NoobleApplication;
+import com.ghost.lucene.search.SearchDocument;
+import com.ghost.lucene.search.SearchService;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
@@ -14,6 +16,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.io.IOException;
+import java.nio.file.InvalidPathException;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Locale;
 
 @Controller
@@ -25,31 +30,38 @@ public class SearchController {
     private Environment environment;
 
     @Autowired
-    private Searcher searcher;
-
-    @Autowired
     private MessageSource messageSource;
 
+    @Autowired
+    private SearchService searchService;
+
     @RequestMapping(value = "/", method = RequestMethod.GET)
-    public String searchForm() {
-        System.out.println("SearchController - searchForm: ");
+    public String searchForm(ModelMap map, Locale locale) {
+        assert environment.getProperty("spring.application.name") == null;
+        assert messageSource.getMessage("spring.application.name", null, locale) == null;
+        NoobleApplication.log.info("App name: {}", environment.getProperty("spring.application.name"));
+        map.put("appName", environment.getProperty("spring.application.name"));
         return "search";
     }
 
     @RequestMapping(value = "/search", method = RequestMethod.GET)
-    public String search(@RequestParam("q") String query, ModelMap map, Locale locale) {
-        System.out.println(SearchController.class);
-//        modelMap.put("appName", configuration.getAppName());
-        map.put("appName", environment.getProperty("spring.application.name"));
+    public String search(@RequestParam("q") String query, ModelMap model, Locale locale) {
+        NoobleApplication.log.info("Search query: {}", query);
+        List<SearchDocument> list = new ArrayList<>();
         try {
-            map.put("pages", searcher.search(query));
+            list.addAll(searchService.search(query));
+        } catch (InvalidPathException e) {
+            model.addAttribute("status.error", messageSource.getMessage("search.error.path", null, locale));
         } catch (ParseException e) {
-            map.put("PARSE_ERROR", messageSource.getMessage("search.error.parse", null, locale));
+            model.addAttribute("status.error", messageSource.getMessage("search.error.parse", null, locale));
         } catch (IOException e) {
-            map.put("DIRECTORY_ERROR", messageSource.getMessage("search.error.directory", null, locale));
+            model.addAttribute("status.error", messageSource.getMessage("search.error.directory", null, locale));
             e.printStackTrace();
         }
-        map.put("resultCount", searcher.getTotalHits());
+        model.addAttribute("pages", list);
+        model.addAttribute("appName", environment.getProperty("spring.application.name"));
+        model.addAttribute("query", query);
+        model.addAttribute("resultCount", searchService.getTotalHits());
         return "searchResult";
     }
 

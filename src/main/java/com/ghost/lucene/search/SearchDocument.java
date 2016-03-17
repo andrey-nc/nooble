@@ -1,9 +1,5 @@
 package com.ghost.lucene.search;
 
-/*
-@Component
-@Scope("prototype")
-*/
 public class SearchDocument {
 
     private String title;
@@ -15,15 +11,6 @@ public class SearchDocument {
         this.contents = contents;
         this.path = path;
     }
-
-    /*
-    public SearchDocument(Document document) {
-        this.contents = document.get(Constants.CONTENTS);
-        this.path = document.get(Constants.SOURCE_PATH);
-        this.title = document.get(Constants.SOURCE_TITLE);
-
-    }
-*/
 
     public String getTitle() {
         return title;

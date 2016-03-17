@@ -1,6 +1,8 @@
 package com.ghost.lucene.search;
 
+import com.ghost.NoobleApplication;
 import com.ghost.lucene.Constants;
+import com.ghost.lucene.LuceneUtility;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.DirectoryReader;
@@ -12,13 +14,11 @@ import org.apache.lucene.search.Query;
 import org.apache.lucene.search.ScoreDoc;
 import org.apache.lucene.search.TopDocs;
 import org.apache.lucene.store.Directory;
-import org.apache.lucene.store.FSDirectory;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
 import java.nio.file.InvalidPathException;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -29,16 +29,19 @@ public class Searcher {
     private QueryParser queryParser;
     private TopDocs resultDocs;
 
-    @Value("${lucene.index.directory}")
-    private String indexPath;
+    @Autowired
+    private LuceneUtility properties;
 
     public Searcher() {}
 
     /**
      * Initializes searcher. Locks the index directory, so you cant provide parallel index
      */
-    private void init() throws InvalidPathException, IOException {
-        Directory indexDirectory = FSDirectory.open(Paths.get(indexPath));
+    private void init() throws IOException {
+        Directory indexDirectory = properties.getIndexDirectory();
+        if (!DirectoryReader.indexExists(indexDirectory)) {
+            NoobleApplication.log.error("Index is not exist in directory: {}!", indexDirectory);
+        }
         IndexReader indexReader = DirectoryReader.open(indexDirectory);
         indexSearcher = new IndexSearcher(indexReader);
         queryParser = new QueryParser(Constants.CONTENTS, new StandardAnalyzer());
@@ -47,17 +50,13 @@ public class Searcher {
     public Collection<Document> search(String queryString) throws InvalidPathException, IOException, ParseException {
         init();
         Query query = queryParser.parse(queryString);
-        resultDocs = indexSearcher.search(query, Constants.MAX_SEARCH);
+        resultDocs = indexSearcher.search(query, properties.getMaxSearch());
         ScoreDoc[] hits = resultDocs.scoreDocs;
         Collection<Document> documents = new ArrayList<>();
         for (ScoreDoc hit : hits) {
             documents.add(indexSearcher.doc(hit.doc));
         }
         return documents;
-    }
-
-    public IndexSearcher getIndexSearcher() {
-        return indexSearcher;
     }
 
     public int getTotalHits() {

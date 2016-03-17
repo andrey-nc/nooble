@@ -2,6 +2,7 @@ package com.ghost.lucene.index;
 
 import com.ghost.NoobleApplication;
 import com.ghost.lucene.Constants;
+import com.ghost.lucene.LuceneUtility;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
@@ -11,12 +12,10 @@ import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.store.Directory;
-import org.apache.lucene.store.FSDirectory;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.*;
-import java.nio.file.Paths;
 
 /**
  *  Indexes row data files
@@ -24,11 +23,10 @@ import java.nio.file.Paths;
 @Component
 public class Indexer {
 
-    private IndexWriter indexWriter;
+    @Autowired
+    private LuceneUtility properties;
 
-    // Check this field in lucene.properties as it depends on OS
-    @Value("${lucene.index.directory}")
-    private String indexPath;
+    private IndexWriter indexWriter;
 
     public Indexer() {}
 
@@ -36,8 +34,8 @@ public class Indexer {
      * Creates new IndexWriter instance. Locks the index directory, so one cant provide parallel search
      */
     public void init() throws IOException {
-        NoobleApplication.log.info("Index directory: {}", indexPath);
-        Directory indexDirectory = FSDirectory.open(Paths.get(indexPath));
+
+        Directory indexDirectory = properties.getIndexDirectory();
         Analyzer analyzer = new StandardAnalyzer();
         IndexWriterConfig config = new IndexWriterConfig(analyzer);
         config.setOpenMode(IndexWriterConfig.OpenMode.CREATE_OR_APPEND);
@@ -61,7 +59,7 @@ public class Indexer {
             document.add(new StringField(Constants.SOURCE_NAME, file.getName(), Field.Store.YES));
             document.add(new StringField(Constants.SOURCE_PATH, file.getCanonicalPath(), Field.Store.YES));
         } else {
-            System.out.println(String.format("File %s Not Found", file));
+            NoobleApplication.log.error("File {} Not Found", file);
         }
         return document;
     }
@@ -89,7 +87,7 @@ public class Indexer {
      * @throws IOException
      */
     private void indexFile(File file) throws IOException{
-        System.out.println("Indexing " + file.getCanonicalPath());
+        NoobleApplication.log.error("Indexing: {}", file.getCanonicalPath());
         Document document = getDocument(file);
         indexWriter.addDocument(document);
     }
@@ -103,26 +101,8 @@ public class Indexer {
      * @throws IOException
      */
     public void indexSource(String content, String name, String path, String title) throws IOException{
-        System.out.println("Indexing " + name);
+        NoobleApplication.log.error("Indexing: {}", path);
         Document document = getDocument(content, name, path, title);
         indexWriter.addDocument(document);
-    }
-
-    /**
-     * Creates index of all files in the specified directory, excluding filtered ones
-     * @param dataDirPath specifies search directory
-     * @param filter for indexed file types
-     * @return number of indexed documents
-     * @throws IOException
-     */
-    public int indexDirectory(String dataDirPath, FileFilter filter) throws IOException{
-        File[] files = new File(dataDirPath).listFiles();
-        assert files != null;
-        for (File file : files) {
-            if(!file.isDirectory() && !file.isHidden() && file.exists() && file.canRead() && filter.accept(file)) {
-                indexFile(file);
-            }
-        }
-        return indexWriter.numDocs();
     }
 }

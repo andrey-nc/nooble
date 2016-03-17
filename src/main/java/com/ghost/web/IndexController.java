@@ -32,7 +32,7 @@ public class IndexController {
 
     @RequestMapping(method = RequestMethod.GET)
     public String indexForm() {
-        System.out.println("IndexController - indexRequest");
+        NoobleApplication.log.info("Index request");
         return "index";
     }
 
@@ -49,7 +49,7 @@ public class IndexController {
             URL url = new URL(query);
             if (ConnectionUtils.isAllowed(url)) {
                 if (isIndexed(url)) {
-                    map.put("INDEX_STATUS", messageSource.getMessage("index.exist", null, locale));
+                    map.put("statusError", messageSource.getMessage("index.exist", null, locale));
                     return new ModelMap("redirect:/index?q=" + query);
                 }
                 indexService.setMaxIndexDepth(depth);

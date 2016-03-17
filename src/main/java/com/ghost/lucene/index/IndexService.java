@@ -3,18 +3,18 @@ package com.ghost.lucene.index;
 import com.ghost.NoobleApplication;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
 import java.net.URL;
+import java.nio.file.InvalidPathException;
+import java.text.DecimalFormat;
 import java.util.concurrent.*;
 
 /**
  * Uses Indexer to index URL source
  */
 @Service
-@PropertySource("classpath:lucene.properties")
 public class IndexService {
 
     //number of threads to index pages simultaneously
@@ -32,7 +32,8 @@ public class IndexService {
     private int indexCount = 0;
     private long indexTime = 0;
 
-    public IndexService() {}
+    public IndexService() {
+    }
 
     /**
      * Call this method to start multithreading recursive index page from specified URL.
@@ -40,7 +41,7 @@ public class IndexService {
      * @param sourceLink for index
      * @throws IOException
     */
-    public void index(URL sourceLink) throws IOException {
+    public void index(URL sourceLink) throws InvalidPathException, IOException {
 
         long startTime = System.currentTimeMillis();
         init();
@@ -49,7 +50,7 @@ public class IndexService {
             Future<Integer> future = executorService.submit(new IndexTask(sourceLink, indexer, maxIndexDepth, numberOfThreads));
             indexCount = future.get();
             if (future.isDone()) {
-                NoobleApplication.log.info("Indexed: " + indexCount);
+                NoobleApplication.log.info("Indexed: {}", indexCount);
             }
         } catch (StackOverflowError e) {
             NoobleApplication.log.error("Stack overflow!", e);
@@ -87,8 +88,8 @@ public class IndexService {
         executorService.awaitTermination(1, TimeUnit.MINUTES);
     }
 
-    public long getIndexTime() {
-        return indexTime;
+    public String getIndexTime() {
+        return new DecimalFormat("#.##").format(indexTime / 1000.0);
     }
 
     public int getIndexCount() {

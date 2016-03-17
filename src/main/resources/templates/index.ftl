@@ -3,7 +3,7 @@
 <html lang="en">
 
 <head>
-    <title>nooble - index</title>
+    <title>Index - ${appName!"nooble"}</title>
     <link rel="stylesheet" type="text/css" media="all" href="/css/styles.css" />
     <link rel="stylesheet" type="text/css" media="all" href="/webjars/bootstrap/4.0.0-alpha.2/css/bootstrap.min.css" />
     <script type="text/javascript" src="/js/script.js" ></script>
@@ -20,13 +20,13 @@
         <form name="search" method="post">
             <label>
                 URI:
-                <input class="uri" type="text" name="q" required value="<#if uri??>${query}</#if>" />
+                <input class="uri" type="text" name="q" required value="${query!""}" />
             </label>
-            <input type="submit" value="Index" />
+            <input type="submit" value="Index" onclick="showStatus('Indexing...')"/>
             <br>
             <label>
                 Глубина рекурсии:
-                <#assign rangeValue=2>
+                <#assign rangeValue=1>
                 <span id="rangeValue">${rangeValue}</span>
                 <span class=""><sup>1</sup></span>
                 <input class="text" type="range" name="depth" min="1" max="5" step="1" value="${rangeValue}"
@@ -35,23 +35,9 @@
             </label>
         </form>
     </div>
-    <div class="center-block">
+    <div class="status" id="status">
         <@message.status/>
     </div>
 </body>
-
-<#--
-<@status name="${ERROR_STATUS}" query="${errorQuery}" class="${message}"/>
-<@status name="${SUCCESS_STATUS}" query="${errorQuery}" class="${message}"/>
-<#macro status name query class>
-<div>
-    <#if name??>
-        <div class="${class}">
-        ${name}: <#if query??> ${query} </#if>
-        </div>
-    </#if>
-</div>
-</#macro>
--->
 
 </html>

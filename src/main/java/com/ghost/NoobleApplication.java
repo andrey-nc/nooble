@@ -20,7 +20,8 @@ public class NoobleApplication extends SpringBootServletInitializer {
 
 	public static void main(String[] args) {
 		SpringApplication.run(NoobleApplication.class, args);
-		log.info("Nooble started: " + NoobleApplication.class);
+		log.info("Nooble started: {}", NoobleApplication.class);
+		log.info("OS: {}", System.getProperty("os.name"));
 	}
 
 	@Override
@@ -39,6 +40,10 @@ public class NoobleApplication extends SpringBootServletInitializer {
 		return configuration;
 	}
 
+	/**
+	 * Resolves ${}
+	 * @return PropertySourcesPlaceholderConfigurer bean
+     */
 	@Bean
 	public PropertySourcesPlaceholderConfigurer configurer() {
 		return new PropertySourcesPlaceholderConfigurer();

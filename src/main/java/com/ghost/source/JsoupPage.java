@@ -32,7 +32,6 @@ public class JsoupPage extends AbstractPage {
 
     @Override
     public String getText() {
-        //String text = document.body().text();
         return Jsoup.parse(document.toString()).text();
     }
 
@@ -58,11 +57,6 @@ public class JsoupPage extends AbstractPage {
                         NoobleApplication.log.error("Malformed link {}", link);
                     }
                 });
-/*
-        for (String link: links) {
-            urls.add(new URL(link));
-        }
-*/
         return urls;
     }
 }

@@ -10,6 +10,21 @@ a:link, a:visited, a:active {
     font-size: 18px;
 }
 
+#results {
+    margin-top: 20px;
+}
+
+.page-title {
+    margin: 0px;
+}
+
+.page-path {
+    font-size: 14px;
+    color: #006621;
+    font-style: normal;
+    margin: 0px;
+}
+
 .nooble {
     font: bold normal 500% "Candara";
     color: #39a0ff;
@@ -24,23 +39,6 @@ a:link, a:visited, a:active {
     color: #39a0ff;
     padding: 2px 5px;
     margin: 5px;
-}
-
-.block-ok {
-    background-color: #f4ffd7;
-    text-align: center;
-    padding: 2px 5px;
-    border: solid 1px green;
-    margin: 0 auto;
-}
-
-.block-error {
-    font: bold normal 100% "Arial";
-    background-color: #ffd5e5;
-    text-align: center;
-    padding: 2px 5px;
-    border: solid 1px red;
-    margin: 0 auto;
 }
 
 .status {

@@ -26,9 +26,13 @@
     </div>
     <br>
     <div class="search-result">
-        <div class="result-text">
-            Результатов: ${pages?size}
-        </div>
+        <#if statusError??>
+            ${statusError}
+        <#else>
+            <div class="result-text">
+                Результатов: ${pages?size} (${searchTime} сек.)
+            </div>
+        </#if>
         <div class="results" id="results">
             <#if pages??>
                 <#list pages as page>

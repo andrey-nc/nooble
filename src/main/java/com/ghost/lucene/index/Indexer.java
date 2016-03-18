@@ -87,7 +87,7 @@ public class Indexer {
      * @throws IOException
      */
     private void indexFile(File file) throws IOException{
-        NoobleApplication.log.error("Indexing: {}", file.getCanonicalPath());
+        NoobleApplication.log.info("Indexing: {}", file.getCanonicalPath());
         Document document = getDocument(file);
         indexWriter.addDocument(document);
     }
@@ -101,7 +101,7 @@ public class Indexer {
      * @throws IOException
      */
     public void indexSource(String content, String name, String path, String title) throws IOException{
-        NoobleApplication.log.error("Indexing: {}", path);
+        NoobleApplication.log.info("Indexing: {}", path);
         Document document = getDocument(content, name, path, title);
         indexWriter.addDocument(document);
     }

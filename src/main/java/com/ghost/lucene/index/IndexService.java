@@ -2,9 +2,10 @@ package com.ghost.lucene.index;
 
 import com.ghost.NoobleApplication;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.InvalidPathException;
@@ -17,23 +18,25 @@ import java.util.concurrent.*;
 @Service
 public class IndexService {
 
-    //number of threads to index pages simultaneously
-    @Value("${lucene.index.threads}")
-    private int numberOfThreads;
-
-    // URL Indexing depth level. Be careful, for values > 2 time indexing will greatly increase
-    @Value("${lucene.index.depth}")
-    private int maxIndexDepth;
+    @Autowired
+    private Environment environment;
 
     @Autowired
     private Indexer indexer;
-
+    private int numberOfThreads;
+    private int maxIndexDepth;
     private ExecutorService executorService;
     private int indexCount = 0;
     private long indexTime = 0;
 
-    public IndexService() {
+
+    @PostConstruct
+    private void initService() {
+        numberOfThreads = Integer.parseInt(environment.getProperty("lucene.index.threads"));
+        maxIndexDepth = Integer.parseInt(environment.getProperty("lucene.index.depth"));
     }
+
+    public IndexService() {}
 
     /**
      * Call this method to start multithreading recursive index page from specified URL.

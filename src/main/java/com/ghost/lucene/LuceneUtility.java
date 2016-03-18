@@ -5,6 +5,7 @@ import com.ghost.utility.OSValidator;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
@@ -17,6 +18,7 @@ import java.nio.file.Paths;
  * Reads lucene.properties file
  */
 @Component
+@PropertySource("classpath:lucene.properties")
 public class LuceneUtility {
 
     @Autowired
@@ -34,7 +36,7 @@ public class LuceneUtility {
         return environment.getProperty("lucene.index.directory");
     }
 
-    public Directory getIndexDirectory() throws IOException {
+    public  Directory getIndexDirectory() throws IOException {
         String path = getIndexPath();
         Path indexPath = null;
         try {
@@ -48,9 +50,5 @@ public class LuceneUtility {
 
     public int getMaxSearch() {
         return Integer.valueOf(environment.getProperty("lucene.search.max"));
-    }
-
-    public int getResultsPerPage() {
-        return Integer.valueOf(environment.getProperty("lucene.search.perpage"));
     }
 }

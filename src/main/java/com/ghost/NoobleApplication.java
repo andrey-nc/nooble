@@ -9,11 +9,15 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.web.SpringBootServletInitializer;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 
+import javax.servlet.ServletContext;
+import javax.servlet.ServletException;
 import java.util.Locale;
 
 @SpringBootApplication
+@PropertySource("classpath:application.properties")
 public class NoobleApplication extends SpringBootServletInitializer {
 
 	public static Logger log = LoggerFactory.getLogger(NoobleApplication.class.getName());
@@ -38,6 +42,12 @@ public class NoobleApplication extends SpringBootServletInitializer {
 		configuration.setLocale(Locale.US);
 		configuration.setTemplateExceptionHandler(TemplateExceptionHandler.RETHROW_HANDLER);
 		return configuration;
+	}
+
+	@Override
+	public void onStartup(ServletContext servletContext) throws ServletException {
+		super.onStartup(servletContext);
+		servletContext.addListener(new SessionListener());
 	}
 
 	/**

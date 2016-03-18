@@ -26,13 +26,15 @@
     </div>
     <br>
     <div class="search-result">
-        <#if statusError??>
-            ${statusError}
-        <#else>
-            <div class="result-text">
-                Результатов: ${pages?size} (${searchTime} сек.)
-            </div>
-        </#if>
+        <div class="" id="">
+            <#if statusError??>
+                ${statusError}
+            <#else>
+                <div class="result-text">
+                    Результатов: <#if pages??>${resultCount!"-"} (${searchTime!"-"} сек.)</#if>
+                </div>
+            </#if>
+        </div>
         <div class="results" id="results">
             <#if pages??>
                 <#list pages as page>
@@ -49,7 +51,20 @@
                 </#list>
             </#if>
         </div>
+        <#-- Button "View more ..." -->
+        <div id="newResults"></div>
+        <#-- Button "View more ..." -->
+        <div id="view-block">
+<#--
+            <form method="get" action="/search">
+                <input type="hidden" name="q" value="${query!""}">
+                <input type="hidden" name="start" value="${start!""}">
+                <input type="submit" id="viewMore" value="View more ...">
+            </form>
+-->
+        </div>
     </div>
+
 
 </body>
 </html>

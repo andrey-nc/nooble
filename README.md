@@ -22,12 +22,9 @@ Web-server
 IDE
  - InteliJ Idea 15
  
-To run app: 
-    <code>java -jar build/libs/nooble.jar</code>
- 
 Default search index directories specified in "lucene.properties":
 
-    <code>WIN: C:\temp\lucene\index</code>
-    <code>UNIX: /var/tmp/lucene/index</code>
+    WIN: C:\temp\lucene\index
+    UNIX: /var/tmp/lucene/index
 
 Log 'nooble.log' is stored in project root

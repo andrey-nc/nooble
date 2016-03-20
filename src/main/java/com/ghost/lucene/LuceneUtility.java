@@ -43,7 +43,7 @@ public class LuceneUtility {
             indexPath = Paths.get(path);
         } catch (InvalidPathException e) {
             NoobleApplication.log.error("Invalid index path: {}", path);
-            throw new RuntimeException("Invalid index path!");
+            throw new RuntimeException(e);
         }
         return FSDirectory.open(indexPath);
     }

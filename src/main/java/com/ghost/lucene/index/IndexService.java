@@ -48,7 +48,7 @@ public class IndexService {
 
         long startTime = System.currentTimeMillis();
         init();
-        indexer.init();
+//        indexer.init();
         try {
             Future<Integer> future = executorService.submit(new IndexTask(sourceLink, indexer, maxIndexDepth, numberOfThreads));
             indexCount = future.get();
@@ -63,7 +63,7 @@ public class IndexService {
         } catch (ExecutionException e) {
             NoobleApplication.log.error("Exception in thread: " + Thread.currentThread().getName(), e);
         }
-        indexer.close();
+//        indexer.close();
         stop();
         indexTime = System.currentTimeMillis() - startTime;
         NoobleApplication.log.info("Index time: " + getIndexTime());

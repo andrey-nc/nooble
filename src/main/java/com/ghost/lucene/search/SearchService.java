@@ -43,7 +43,7 @@ public class SearchService {
 
         long startTime = System.currentTimeMillis();
         resultDocs.clear();
-        searcher.init();
+//        searcher.init();
         searcher.search(queryString);
         searcher.getHits()
                 .stream()

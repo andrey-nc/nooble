@@ -16,6 +16,8 @@ import org.apache.lucene.store.Directory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
@@ -37,6 +39,7 @@ public class Indexer {
     /**
      * Creates new IndexWriter instance. Locks the index directory, so one cant provide parallel search
      */
+    @PostConstruct
     public void init() throws IOException {
 
         Directory indexDirectory;
@@ -52,6 +55,7 @@ public class Indexer {
         indexWriter = new IndexWriter(indexDirectory, config);
     }
 
+    @PreDestroy
     public void close() throws IOException{
         indexWriter.close();
     }
@@ -118,4 +122,7 @@ public class Indexer {
 //        indexWriter.addDocument(document);
     }
 
+    public IndexWriter getIndexWriter() {
+        return indexWriter;
+    }
 }

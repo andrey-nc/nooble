@@ -8,6 +8,7 @@ import com.ghost.lucene.search.SearchService;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
+import org.springframework.context.annotation.Scope;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.ModelMap;
@@ -18,6 +19,7 @@ import java.util.Collection;
 import java.util.Locale;
 
 @Controller
+@Scope("session")
 public class SearchController {
 
     @Autowired

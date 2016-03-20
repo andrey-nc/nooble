@@ -28,8 +28,8 @@ configurations {
 
 dependencies {
 	compile('org.springframework.boot:spring-boot-starter-freemarker')
-	compile('org.webjars:bootstrap:4.0.0-alpha.2')
-	compile('org.webjars:jquery:3.0.0-alpha1')
+	compile('org.webjars:bootstrap:3.3.6')
+	compile('org.webjars:jquery:2.2.1')
 	compile('org.json:json:20160212')
 	compile('org.apache.lucene:lucene-core:5.5.0')
 	compile('org.apache.lucene:lucene-analyzers-common:5.5.0')

@@ -66,7 +66,7 @@ public class IndexService {
         indexer.close();
         stop();
         indexTime = System.currentTimeMillis() - startTime;
-        NoobleApplication.log.info("Index time: " + indexTime);
+        NoobleApplication.log.info("Index time: " + getIndexTime());
     }
 
     /**

@@ -38,13 +38,13 @@ public class LuceneUtility {
 
     public  Directory getIndexDirectory() throws IOException {
         String path = getIndexPath();
-        Path indexPath = null;
+        Path indexPath;
         try {
             indexPath = Paths.get(path);
         } catch (InvalidPathException e) {
             NoobleApplication.log.error("Invalid index path: {}", path);
+            throw new RuntimeException("Invalid index path!");
         }
-        NoobleApplication.log.info("Index directory: {}", indexPath);
         return FSDirectory.open(indexPath);
     }
 

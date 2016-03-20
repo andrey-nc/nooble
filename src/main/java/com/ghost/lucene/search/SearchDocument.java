@@ -1,9 +1,17 @@
 package com.ghost.lucene.search;
 
+import com.fasterxml.jackson.annotation.JsonView;
+import com.ghost.json.View;
+
 public class SearchDocument {
 
+    @JsonView(View.Public.class)
     private String title;
+
+    @JsonView(View.Public.class)
     private String contents;
+
+    @JsonView(View.Public.class)
     private String path;
 
     public SearchDocument(String title, String contents, String path) {

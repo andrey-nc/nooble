@@ -11,11 +11,15 @@ import org.apache.lucene.document.StringField;
 import org.apache.lucene.document.TextField;
 import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
+import org.apache.lucene.index.Term;
 import org.apache.lucene.store.Directory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.StringReader;
 
 /**
  *  Indexes row data files
@@ -35,7 +39,13 @@ public class Indexer {
      */
     public void init() throws IOException {
 
-        Directory indexDirectory = properties.getIndexDirectory();
+        Directory indexDirectory;
+        try {
+            indexDirectory = properties.getIndexDirectory();
+        } catch (IOException e) {
+            NoobleApplication.log.error("Error initializing index directory: {}", e);
+            throw new RuntimeException("Error initializing index directory!");
+        }
         Analyzer analyzer = new StandardAnalyzer();
         IndexWriterConfig config = new IndexWriterConfig(analyzer);
         config.setOpenMode(IndexWriterConfig.OpenMode.CREATE_OR_APPEND);
@@ -103,6 +113,9 @@ public class Indexer {
     public void indexSource(String content, String name, String path, String title) throws IOException{
         NoobleApplication.log.info("Indexing: {}", path);
         Document document = getDocument(content, name, path, title);
-        indexWriter.addDocument(document);
+        // TODO: avoid document duplicating while indexing or searching?
+        indexWriter.updateDocument(new Term(name), document);
+//        indexWriter.addDocument(document);
     }
+
 }

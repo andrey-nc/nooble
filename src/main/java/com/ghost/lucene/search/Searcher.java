@@ -8,13 +8,15 @@ import org.apache.lucene.document.Document;
 import org.apache.lucene.index.DirectoryReader;
 import org.apache.lucene.queryparser.classic.ParseException;
 import org.apache.lucene.queryparser.classic.QueryParser;
-import org.apache.lucene.search.*;
+import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.search.Query;
+import org.apache.lucene.search.ScoreDoc;
+import org.apache.lucene.search.TopScoreDocCollector;
 import org.apache.lucene.store.Directory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
-import java.nio.file.InvalidPathException;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -25,7 +27,7 @@ public class Searcher {
     private QueryParser queryParser;
     private DirectoryReader directoryReader;
     private TopScoreDocCollector collector;
-    private ScoreDoc[] hits;
+
     @Autowired
     private LuceneUtility luceneUtility;
 
@@ -48,12 +50,24 @@ public class Searcher {
         queryParser = new QueryParser(Constants.CONTENTS, new StandardAnalyzer());
     }
 
-    public void search(String queryString) throws InvalidPathException, IOException, ParseException {
+    /**
+     * Provides search of the given search string. Results store in Collector. Max search results count defined in
+     * lucene.properties
+     * @param queryString to search
+     * @throws IOException
+     * @throws ParseException
+     */
+    public void search(String queryString) throws IOException, ParseException {
         Query query = queryParser.parse(queryString);
         collector = TopScoreDocCollector.create(luceneUtility.getMaxSearch());
         indexSearcher.search(query, collector);
     }
 
+    /**
+     * Returns relevant sorted collection of found documents
+     * @return collection of found documents
+     * @throws IOException
+     */
     public Collection<Document> getHits() throws IOException {
         ScoreDoc[] hits = collector.topDocs().scoreDocs;
         NoobleApplication.log.info("Docs found: {}", getTotalHits());
@@ -64,6 +78,9 @@ public class Searcher {
         return documents;
     }
 
+    /**
+     * @return Total count of found documents
+     */
     public int getTotalHits() {
         return collector.getTotalHits();
     }

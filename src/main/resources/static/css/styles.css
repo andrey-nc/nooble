@@ -1,16 +1,17 @@
 body, html, h2, h1 {
     font-family: arial,sans-serif;
+    font-weight: normal;
 }
 
 a:link, a:visited, a:active {
     color: #1a0dab;
 }
 
-#results h3 {
+#result-list h3 {
     font-size: 18px;
 }
 
-#results {
+#result-list {
     margin-top: 20px;
 }
 
@@ -30,15 +31,18 @@ a:link, a:visited, a:active {
     color: #39a0ff;
     text-align: center;
     padding: 2px 5px;
-    margin-top: 100px;
+    margin-bottom: 15px;
+    margin-top: 223px;
     url("/");
 }
 
 .nooble-little {
     font: bold normal 30px "Candara";
     color: #39a0ff;
-    padding: 2px 5px;
-    margin: 5px;
+    padding: 5px 10px;
+    margin: 5px 0;
+    display: inline-block;
+    vertical-align: middle;
 }
 
 .status {
@@ -48,27 +52,19 @@ a:link, a:visited, a:active {
     text-align: center;
 }
 
-.search-bg {
-    background: #f1f1f1;
-    width: 100%;
-    left: 0;
-    height: 59px;
-    border: 1px solid #e5e5e5;
-}
-
 div {
     display: block;
 }
 
-.index {
+.nooble-form {
     text-align: center;
 }
 
-input.uri {
+.uri {
     width: 500px;
 }
 
-input.search-depth {
+.index-depth {
     width: 50px;
 }
 
@@ -84,4 +80,152 @@ input.search-depth {
 
 label input {
     vertical-align: middle;
+}
+
+#edge-separator {
+    margin-bottom: 50px;
+}
+
+#range-text {
+    color: #757575;
+    font-size: 14px;
+}
+
+/* nooble search main button*/
+
+.nooble-button {
+    background-image: -webkit-gradient(linear,left top,left bottom,from(#f5f5f5),to(#f1f1f1));
+    background-image: -webkit-linear-gradient(top,#f5f5f5,#f1f1f1);
+    -webkit-border-radius: 2px;
+    -webkit-user-select: none;
+    display: inline-block;
+    padding:6px 16px;
+    margin: 11px 4px;
+    font-size: 13px;
+    font-weight: bold;
+    border:1px solid #f2f2f2;
+    border-radius: 2px;
+    background-color:#f2f2f2;
+    color:#757575;
+    text-align: center;
+    vertical-align: top;
+    min-width: 54px;
+    font-family: arial,sans-serif;
+    cursor: default;
+    height: 36px;
+}
+
+.nooble-button:hover {
+    background-color:#fafafa;
+    color:#000000;
+    border: 1px solid #b9b9b9;
+}
+
+/* search input */
+
+#nooble-input:hover {
+    border: 1px solid #b9b9b9;
+}
+
+/* Set input background color when auto-filling text  */
+#nooble-input:-webkit-autofill {
+    -webkit-box-shadow: 0 0 0px 1000px white inset;
+}
+
+#nooble-input {
+    padding:11px 15px;
+    margin: 10px 0;
+    width: 638px;
+    background-color: #fff;
+    border: 1px solid #d9d9d9;
+    height: 38px;
+    vertical-align: top;
+    white-space: nowrap;
+    -webkit-box-sizing: border-box;
+    font-size: 16px;
+}
+
+.nooble-input-margin {
+    margin: 10px 4px;
+}
+
+/* little search button with image */
+
+.search-btn-little-bg {
+    background: url(/img/google_search.png) no-repeat;
+    color: transparent;
+    display: inline-block;
+    height: 19px;
+    width: 19px;
+    margin: 7px auto;
+}
+
+.search-btn-little {
+    background: transparent;
+    border: 0;
+    font-size: 0;
+    height: 30px;
+    outline: 0;
+    width: 100%;
+    float: none;
+}
+
+#search-btn-little {
+    text-align: center;
+    border-bottom-left-radius: 0;
+    border-top-left-radius: 0;
+    height: 38px;
+    margin: 10px 0;
+    padding: 0;
+    width: 38px;
+    min-width: 38px !important;
+    background-color: #4285f4;
+    background-image: none;
+    border: none;
+
+    background-image: -webkit-gradient(linear,left top,left bottom,from(#f5f5f5),to(#f1f1f1));
+    background-image: -webkit-linear-gradient(top,#f5f5f5,#f1f1f1);
+    -webkit-border-radius: 2px;
+    -webkit-user-select: none;
+    cursor: default;
+    background-image: none;
+
+    border: 0;
+    line-height: 0;
+}
+
+/* search results menu containers */
+
+.search-container {
+    overflow: hidden;
+    width: 800px;
+/*    margin: 10px 0;*/
+}
+
+.search-box {
+    white-space: nowrap;
+}
+
+.search-box div {
+    display: inline-block;
+    vertical-align: middle;
+}
+
+.search-form-container {
+    float: left;
+    display: inline-block;
+    width: 638px;
+}
+
+.logo-container {
+    float: left;
+    display: inline-block;
+}
+
+.search-bg {
+    background: #f1f1f1;
+    left: 0;
+    height: 58px;
+    border: 1px solid #e5e5e5;
+    white-space: nowrap;
 }

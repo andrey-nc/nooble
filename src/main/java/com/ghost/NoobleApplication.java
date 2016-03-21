@@ -48,6 +48,7 @@ public class NoobleApplication extends SpringBootServletInitializer {
 	@Override
 	public void onStartup(ServletContext servletContext) throws ServletException {
 		super.onStartup(servletContext);
+		//FIXME: Class is not found... SessionListener
 		servletContext.addListener(new SessionListener());
 	}
 

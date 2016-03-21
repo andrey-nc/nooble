@@ -1,54 +1,24 @@
 package com.ghost.lucene;
 
-import com.ghost.NoobleApplication;
-import com.ghost.utility.OSValidator;
-import org.apache.lucene.store.Directory;
-import org.apache.lucene.store.FSDirectory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.PropertySource;
-import org.springframework.core.env.Environment;
-import org.springframework.stereotype.Component;
+import java.text.DecimalFormat;
+import java.util.concurrent.TimeUnit;
 
-import java.io.IOException;
-import java.nio.file.InvalidPathException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-
-/**
- * Reads lucene.properties file
- */
-@Component
-@PropertySource("classpath:lucene.properties")
 public class LuceneUtility {
 
-    @Autowired
-    private Environment environment;
-
     /**
-     * Defines index directory depending on OS (win or unix)
-     * @return os specific index directory or default
+     * Transforms given time period in milliseconds to string representation like:
+     * 8105340 ms -> "2 hours 15 minutes 5,34 seconds"
+     * @param timeInMillis is a time period to be converted
+     * @return formatted time string
      */
-    public String getIndexPath() {
-        switch (OSValidator.getOSType()) {
-            case WIN: return environment.getProperty("lucene.index.directory.win");
-            case UNIX: return environment.getProperty("lucene.index.directory.unix");
-        }
-        return environment.getProperty("lucene.index.directory");
-    }
-
-    public  Directory getIndexDirectory() throws IOException {
-        String path = getIndexPath();
-        Path indexPath;
-        try {
-            indexPath = Paths.get(path);
-        } catch (InvalidPathException e) {
-            NoobleApplication.log.error("Invalid index path: {}", path);
-            throw new RuntimeException(e);
-        }
-        return FSDirectory.open(indexPath);
-    }
-
-    public int getMaxSearch() {
-        return Integer.valueOf(environment.getProperty("lucene.search.max"));
+    public static String formatTime(long timeInMillis) {
+        long hours = TimeUnit.MILLISECONDS.toHours(timeInMillis);
+        long allMinutes = TimeUnit.MILLISECONDS.toMinutes(timeInMillis);
+        long minutes = allMinutes - TimeUnit.HOURS.toMinutes(hours);
+        long milliseconds = timeInMillis - TimeUnit.MINUTES.toMillis(allMinutes);
+        String secondsString = new DecimalFormat("#.##").format(milliseconds / 1000.0) + " seconds";
+        String minutesString = minutes + " minutes " + secondsString;
+        String hoursString = hours + " hours " + minutesString;
+        return hours > 0 ? hoursString : minutes > 0 ? minutesString : secondsString;
     }
 }

@@ -3,6 +3,9 @@ package com.ghost.lucene.search;
 import com.fasterxml.jackson.annotation.JsonView;
 import com.ghost.json.View;
 
+/**
+ *  Holds main fields of searched documents and used to translate via json
+ */
 public class SearchDocument {
 
     @JsonView(View.Public.class)

@@ -31,8 +31,10 @@ public class IndexController {
     private MessageSource messageSource;
 
     @RequestMapping(method = RequestMethod.GET)
-    public String indexForm() {
+    public String indexForm(ModelMap map) {
         NoobleApplication.log.info("Index request");
+        map.put("depth", indexService.getIndexDepth());
+        map.put("depthMax", indexService.getMaxIndexDepth());
         return "index";
     }
 
@@ -52,7 +54,7 @@ public class IndexController {
                     map.put("statusError", messageSource.getMessage("index.exist", null, locale));
                     return new ModelMap("redirect:/index?q=" + query);
                 }
-                indexService.setMaxIndexDepth(depth);
+                indexService.setIndexDepth(depth);
                 indexService.index(url);
                 addToIndex(url);
                 map.put("indexCount", indexService.getIndexCount());

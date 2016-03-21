@@ -17,7 +17,7 @@
 <div>
 <#if indexCount??>
     <div>
-        Indexed pages: <b>${indexCount!"-"}</b> (${indexTime!"-"} сек.)
+        Indexed pages: <b>${indexCount!"-"}</b> (${indexTime!"-"} sec.)
     </div>
 </#if>
 </div>

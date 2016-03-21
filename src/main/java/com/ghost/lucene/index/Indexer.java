@@ -1,8 +1,9 @@
 package com.ghost.lucene.index;
 
 import com.ghost.NoobleApplication;
-import com.ghost.lucene.Constants;
-import com.ghost.lucene.LuceneUtility;
+import com.ghost.lucene.LuceneConstants;
+import com.ghost.lucene.LuceneProperties;
+import com.ghost.utility.OSValidator;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
@@ -13,6 +14,7 @@ import org.apache.lucene.index.IndexWriter;
 import org.apache.lucene.index.IndexWriterConfig;
 import org.apache.lucene.index.Term;
 import org.apache.lucene.store.Directory;
+import org.apache.lucene.store.FSDirectory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -22,6 +24,9 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.StringReader;
+import java.nio.file.InvalidPathException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 /**
  *  Indexes row data files
@@ -30,7 +35,7 @@ import java.io.StringReader;
 public class Indexer {
 
     @Autowired
-    private LuceneUtility properties;
+    private LuceneProperties luceneProperties;
 
     private IndexWriter indexWriter;
 
@@ -44,7 +49,7 @@ public class Indexer {
 
         Directory indexDirectory;
         try {
-            indexDirectory = properties.getIndexDirectory();
+            indexDirectory = getIndexDirectory();
         } catch (IOException e) {
             NoobleApplication.log.error("Error initializing index directory: {}", e);
             throw new RuntimeException("Error initializing index directory!");
@@ -60,6 +65,32 @@ public class Indexer {
         indexWriter.close();
     }
 
+    public Directory getIndexDirectory() throws IOException {
+        String path = getIndexPath();
+        Path indexPath;
+        try {
+            indexPath = Paths.get(path);
+        } catch (InvalidPathException e) {
+            NoobleApplication.log.error("Invalid index path: {}", path);
+            throw new RuntimeException(e);
+        }
+        return FSDirectory.open(indexPath);
+    }
+
+    /**
+     * Defines index directory depending on OS (win or unix)
+     * @return os specific index directory or default
+     */
+    public String getIndexPath() {
+        // TODO: may use System.getProperty("java.io.tmpdir") instead?
+        switch (OSValidator.getOSType()) {
+            case WIN: return luceneProperties.getIndex().getDirectoryWin();
+            case UNIX: return luceneProperties.getIndex().getDirectoryUnix();
+        }
+        return luceneProperties.getIndex().getDirectory();
+    }
+
+
     /**
      * Builds the Document from a raw content file. Indexes file contents, name and path.
      * @param file with raw data (plain text file)
@@ -69,9 +100,9 @@ public class Indexer {
     private Document getDocument(File file) throws IOException{
         Document document = new Document();
         if (file.exists() && !file.isDirectory()) {
-            document.add(new TextField(Constants.CONTENTS, new FileReader(file)));
-            document.add(new StringField(Constants.SOURCE_NAME, file.getName(), Field.Store.YES));
-            document.add(new StringField(Constants.SOURCE_PATH, file.getCanonicalPath(), Field.Store.YES));
+            document.add(new TextField(LuceneConstants.CONTENTS, new FileReader(file)));
+            document.add(new StringField(LuceneConstants.SOURCE_NAME, file.getName(), Field.Store.YES));
+            document.add(new StringField(LuceneConstants.SOURCE_PATH, file.getCanonicalPath(), Field.Store.YES));
         } else {
             NoobleApplication.log.error("File {} Not Found", file);
         }
@@ -88,10 +119,10 @@ public class Indexer {
      */
     private Document getDocument(String content, String name, String path, String title) {
         Document document = new Document();
-        document.add(new TextField(Constants.CONTENTS, new StringReader(content)));
-        document.add(new StringField(Constants.SOURCE_TITLE, title, Field.Store.YES));
-        document.add(new StringField(Constants.SOURCE_NAME, name, Field.Store.YES));
-        document.add(new StringField(Constants.SOURCE_PATH, path, Field.Store.YES));
+        document.add(new TextField(LuceneConstants.CONTENTS, new StringReader(content)));
+        document.add(new StringField(LuceneConstants.SOURCE_TITLE, title, Field.Store.YES));
+        document.add(new StringField(LuceneConstants.SOURCE_NAME, name, Field.Store.YES));
+        document.add(new StringField(LuceneConstants.SOURCE_PATH, path, Field.Store.YES));
         return document;
     }
 

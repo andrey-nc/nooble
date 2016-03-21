@@ -54,13 +54,8 @@ public class SearchController {
             searchService.search(query);
             model.addAttribute("pages", searchService.getResultDocs(0));
             model.addAttribute("resultCount", searchService.getTotalHits());
-            model.addAttribute("searchTime", searchService.getSearchTime());
-            if (searchService.getTotalHits() > searchService.getDocsPerPage()) {
-                model.addAttribute("start", searchService.getDocsPerPage());
-            } else {
-                model.addAttribute("start", 0);
-            }
-
+            model.addAttribute("searchTime", searchService.getSearchTimeString());
+            model.addAttribute("start", searchService.getStart());
         } catch (ParseException e) {
             model.addAttribute("statusError", messageSource.getMessage("search.error.parse", null, locale));
         } catch (IOException e) {

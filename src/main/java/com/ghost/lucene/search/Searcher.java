@@ -1,9 +1,9 @@
 package com.ghost.lucene.search;
 
 import com.ghost.NoobleApplication;
-import com.ghost.lucene.Constants;
-import com.ghost.lucene.LuceneUtility;
+import com.ghost.lucene.LuceneConstants;
 import com.ghost.lucene.index.Indexer;
+import com.ghost.lucene.LuceneProperties;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 import org.apache.lucene.document.Document;
 import org.apache.lucene.index.CorruptIndexException;
@@ -30,7 +30,7 @@ public class Searcher {
     private TopScoreDocCollector collector;
 
     @Autowired
-    private LuceneUtility luceneUtility;
+    private LuceneProperties luceneProperties;
 
     @Autowired
     private Indexer indexer;
@@ -62,21 +62,15 @@ public class Searcher {
      * @throws ParseException
      */
     public void search(String queryString) throws IOException, ParseException {
-/*
-        Directory indexDirectory = luceneUtility.getIndexDirectory();
-        if (!DirectoryReader.indexExists(indexDirectory)) {
-            NoobleApplication.log.error("Index is not exist in directory: {}!", indexDirectory);
-        }
-*/
         if (directoryReader == null) {
             init();
         }
         DirectoryReader newDirectoryReader = DirectoryReader.openIfChanged(directoryReader);
         directoryReader = newDirectoryReader == null ? directoryReader : newDirectoryReader;
         indexSearcher = new IndexSearcher(directoryReader);
-        QueryParser queryParser = new QueryParser(Constants.CONTENTS, new StandardAnalyzer());
+        QueryParser queryParser = new QueryParser(LuceneConstants.CONTENTS, new StandardAnalyzer());
         Query query = queryParser.parse(queryString);
-        collector = TopScoreDocCollector.create(luceneUtility.getMaxSearch());
+        collector = TopScoreDocCollector.create(luceneProperties.getSearch().getMax());
         indexSearcher.search(query, collector);
     }
 

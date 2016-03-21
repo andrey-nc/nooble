@@ -22,9 +22,9 @@
             <br>
             <label id="range-text">
                 Index depth:
-                <#assign rangeValue=1>
-                <span id="range-value">${rangeValue}</span>
-                <input class="index-depth" type="range" name="depth" min="1" max="5" step="1" value="${rangeValue}"
+                <#assign depthDefault=1 depthMaxDefault=3>
+                <span id="range-value">${depth!depthDefault}</span>
+                <input class="index-depth" type="range" name="depth" min="1" max="${depthMax!depthMaxDefault}" step="1" value="${depth!depthDefault}"
                         onchange="showValue(this.value)" oninput="showValue(this.value)"/>
             </label>
             <br>

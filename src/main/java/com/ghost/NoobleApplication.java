@@ -26,6 +26,7 @@ public class NoobleApplication extends SpringBootServletInitializer {
 		SpringApplication.run(NoobleApplication.class, args);
 		log.info("Nooble started: {}", NoobleApplication.class);
 		log.info("OS: {}", System.getProperty("os.name"));
+		log.info("temp: {}", System.getProperty("java.io.tmpdir"));
 	}
 
 	@Override

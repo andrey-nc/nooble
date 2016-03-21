@@ -38,7 +38,7 @@
                     ${statusError}
                 <#else>
                     <div class="result-text" id="result-text">
-                        Результатов: <#if pages??>${resultCount!"-"} (${searchTime!"-"} сек.)</#if>
+                        <#if pages??>${resultCount!"-"} results (${searchTime!"-"})</#if>
                     </div>
                 </#if>
             </div>

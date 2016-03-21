@@ -1,15 +1,15 @@
 package com.ghost.lucene.index;
 
 import com.ghost.NoobleApplication;
+import com.ghost.lucene.LuceneUtility;
+import com.ghost.lucene.LuceneProperties;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.net.URL;
 import java.nio.file.InvalidPathException;
-import java.text.DecimalFormat;
 import java.util.concurrent.*;
 
 /**
@@ -19,11 +19,12 @@ import java.util.concurrent.*;
 public class IndexService {
 
     @Autowired
-    private Environment environment;
+    private LuceneProperties luceneProperties;
 
     @Autowired
     private Indexer indexer;
     private int numberOfThreads;
+    private int indexDepth;
     private int maxIndexDepth;
     private ExecutorService executorService;
     private int indexCount = 0;
@@ -32,15 +33,16 @@ public class IndexService {
 
     @PostConstruct
     private void initService() {
-        numberOfThreads = Integer.parseInt(environment.getProperty("lucene.index.threads"));
-        maxIndexDepth = Integer.parseInt(environment.getProperty("lucene.index.depth"));
+        numberOfThreads = luceneProperties.getIndex().getThreads();
+        indexDepth = luceneProperties.getIndex().getDepth();
+        maxIndexDepth = luceneProperties.getIndex().getDepthMax();
     }
 
     public IndexService() {}
 
     /**
      * Call this method to start multithreading recursive index page from specified URL.
-     * Be careful, for maxIndexDepth values > 2 time indexing will greatly increase
+     * Be careful, for indexDepth values > 2 time indexing will greatly increase
      * @param sourceLink for index
      * @throws IOException
     */
@@ -48,9 +50,8 @@ public class IndexService {
 
         long startTime = System.currentTimeMillis();
         init();
-//        indexer.init();
         try {
-            Future<Integer> future = executorService.submit(new IndexTask(sourceLink, indexer, maxIndexDepth, numberOfThreads));
+            Future<Integer> future = executorService.submit(new IndexTask(sourceLink, indexer, indexDepth, numberOfThreads));
             indexCount = future.get();
             if (future.isDone()) {
                 NoobleApplication.log.info("Indexed: {}", indexCount);
@@ -63,7 +64,6 @@ public class IndexService {
         } catch (ExecutionException e) {
             NoobleApplication.log.error("Exception in thread: " + Thread.currentThread().getName(), e);
         }
-//        indexer.close();
         stop();
         indexTime = System.currentTimeMillis() - startTime;
         NoobleApplication.log.info("Index time: " + getIndexTime());
@@ -92,14 +92,22 @@ public class IndexService {
     }
 
     public String getIndexTime() {
-        return new DecimalFormat("#.##").format(indexTime / 1000.0);
+        return LuceneUtility.formatTime(indexTime);
     }
 
     public int getIndexCount() {
         return indexCount;
     }
 
-    public void setMaxIndexDepth(int maxIndexDepth) {
-        this.maxIndexDepth = maxIndexDepth;
+    public void setIndexDepth(int indexDepth) {
+        this.indexDepth = indexDepth;
+    }
+
+    public int getIndexDepth() {
+        return indexDepth;
+    }
+
+    public int getMaxIndexDepth() {
+        return maxIndexDepth;
     }
 }

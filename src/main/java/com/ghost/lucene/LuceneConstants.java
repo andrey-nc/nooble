@@ -1,6 +1,7 @@
 package com.ghost.lucene;
 
-public class Constants {
+public class LuceneConstants {
+    // Document field names
     public static final String CONTENTS="contents";
     public static final String SOURCE_NAME ="name";
     public static final String SOURCE_PATH ="path";
